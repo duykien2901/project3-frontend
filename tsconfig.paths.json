@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@ducks/*": ["./src/ducks/*"],
+      "@utils/*": ["./src/libs/helpers/utils/*"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@nocode/components": ["../marketplace/nocode/components"]
+    }
+  }
+}
