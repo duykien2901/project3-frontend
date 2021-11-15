@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { a } from "@/libs/helpers/utils/index";
+import { a } from "./libs/helpers/utils";
 
 function App() {
   return (
