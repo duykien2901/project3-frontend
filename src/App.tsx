@@ -1,5 +1,4 @@
 import React from "react";
-import "./App.css";
 import { a } from "./libs/helpers/utils";
 
 function App() {
