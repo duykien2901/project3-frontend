@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
+import "antd/dist/antd.css";
 import { Provider } from "react-redux";
 import store, { persistor } from "src/ducks";
 import { PersistGate } from "redux-persist/integration/react";
