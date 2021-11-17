@@ -46,7 +46,7 @@ const LoginPage: React.FC = () => {
                   />
                 </FormItem>
                 <SubmitButton className="btn-login" type="primary" size="large">
-                  Login
+                  Login User
                 </SubmitButton>
               </Form>
             )}
