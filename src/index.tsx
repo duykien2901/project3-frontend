@@ -1,16 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import App from "./App";
 import { Provider } from "react-redux";
 import store, { persistor } from "src/ducks";
 import { PersistGate } from "redux-persist/integration/react";
+import AppRoute from "src/routes";
 
 ReactDOM.render(
   <React.Fragment>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <App />
+        <AppRoute />
       </PersistGate>
     </Provider>
   </React.Fragment>,
