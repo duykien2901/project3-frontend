@@ -4,7 +4,8 @@ type User = {
   id: number;
   email: string;
   name: string;
-  profileImage: string;
+  userId?: string;
+  profileImage?: string;
 };
 
 type InitialState = {

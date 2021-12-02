@@ -1,10 +1,10 @@
-import { Row } from "antd";
 import { Formik } from "formik";
 import { Form, Input, SubmitButton, FormItem } from "formik-antd";
 import React from "react";
 import { Link } from "react-router-dom";
 import { LoginWrapper } from "src/components/login/style";
 import useUser from "src/ducks/user/hook";
+import validateSchema from "src/libs/helpers/yup/login.validate";
 
 const LoginPage: React.FC = () => {
   const { login } = useUser();
@@ -14,13 +14,14 @@ const LoginPage: React.FC = () => {
         <div className="login-page-body">
           <Formik
             initialValues={{
-              username: "",
+              email: "",
               password: "",
             }}
             onSubmit={async (values, { resetForm }) => {
               await login(values);
-              resetForm({ values: { username: "", password: "" } });
+              // resetForm({ values: { email: "", password: "" } });
             }}
+            validationSchema={validateSchema()}
           >
             {() => (
               <Form className="login-form">
@@ -28,11 +29,11 @@ const LoginPage: React.FC = () => {
                 <FormItem
                   labelCol={{ span: 24 }}
                   wrapperCol={{ span: 24 }}
-                  label={"Username"}
+                  label={"Email"}
                   name="email"
                   required
                 >
-                  <Input name="username" size="large" placeholder="username" />
+                  <Input name="email" size="large" placeholder="Email" />
                 </FormItem>
                 <FormItem
                   labelCol={{ span: 24 }}
@@ -51,6 +52,9 @@ const LoginPage: React.FC = () => {
                 <SubmitButton className="btn-login" type="primary" size="large">
                   Login
                 </SubmitButton>
+                <div className="link-signup">
+                  <Link to="/forget">Forgot password?</Link>
+                </div>
                 <div className="link-signup">
                   <Link to="/signup">No account? Sign Up</Link>
                 </div>
