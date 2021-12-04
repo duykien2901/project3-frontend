@@ -121,6 +121,20 @@ const useUser = () => {
     },
     [resendMail]
   );
+  const changePassword = useCallback(async ({ password, userId }) => {
+    try {
+      await axios.post(API_ENDPOINTS.RESET_PASSWORD, { password, userId });
+      Modal.success({
+        content: "Successfully",
+        centered: true,
+      });
+    } catch (err: any) {
+      notification.error({
+        message: err.response.data.message || err.message,
+        duration: 2,
+      });
+    }
+  }, []);
   return {
     loggedUser,
     login,
@@ -134,6 +148,7 @@ const useUser = () => {
     verifyAccount,
     error,
     forgot,
+    changePassword,
   };
 };
 
