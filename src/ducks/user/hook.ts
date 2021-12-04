@@ -21,9 +21,9 @@ const useUser = () => {
   const { loggedUser } = useSelector(userSelector);
   const dispatch = useDispatch();
 
-  const resendMail = useCallback(async (email) => {
+  const resendMail = useCallback(async (email, forgot = false) => {
     try {
-      await axios.post(API_ENDPOINTS.RESENT, { email });
+      await axios.post(API_ENDPOINTS.RESENT, { email, forgot });
       Modal.success({
         content: "you check your mail to active account",
         centered: true,
@@ -111,7 +111,16 @@ const useUser = () => {
       setError(true);
     }
   }, []);
-
+  const forgot = useCallback(
+    ({ email }) => {
+      try {
+        resendMail(email, true);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [resendMail]
+  );
   return {
     loggedUser,
     login,
@@ -124,6 +133,7 @@ const useUser = () => {
     setLoading,
     verifyAccount,
     error,
+    forgot,
   };
 };
 

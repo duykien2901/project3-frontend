@@ -53,7 +53,7 @@ const LoginPage: React.FC = () => {
                   Login
                 </SubmitButton>
                 <div className="link-signup">
-                  <Link to="/forget">Forgot password?</Link>
+                  <Link to="/forgot">Forgot password?</Link>
                 </div>
                 <div className="link-signup">
                   <Link to="/signup">No account? Sign Up</Link>

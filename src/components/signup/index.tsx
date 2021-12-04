@@ -52,7 +52,7 @@ const SignUpPage: React.FC = () => {
                   <FormItem
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
-                    label={"Username"}
+                    label={"Email"}
                     name="email"
                     required
                   >
