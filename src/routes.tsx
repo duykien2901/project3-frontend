@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import PublicRoute from "src/components/commom/public-route";
 import ForgotPasswordWrapper from "src/components/forgot";
 import useUser from "src/ducks/user/hook";
+import Layout from "./components/layouts";
 import Verify from "./components/verify";
 
 const LoginPage = lazy(() => import("src/components/login"));
@@ -35,6 +36,15 @@ const Routes = () => {
       <PublicRoute exact path="/forgot">
         <ForgotPasswordWrapper />
       </PublicRoute>
+      <Route path="/home">
+        <Layout>
+          <Switch>
+            <Route path="/home">
+              <div></div>
+            </Route>
+          </Switch>
+        </Layout>
+      </Route>
     </Switch>
   );
 };

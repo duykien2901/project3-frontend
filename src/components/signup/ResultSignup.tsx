@@ -4,6 +4,7 @@ import tick from "src/assets/img/tick-xanh.png";
 import { Button } from "antd";
 import { Link } from "react-router-dom";
 import useUser from "src/ducks/user/hook";
+
 const ResultSignup: React.FC<{ email: string }> = ({ email }) => {
   const { resendMail } = useUser();
   return (
