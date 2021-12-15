@@ -1,3 +1,4 @@
+import { Modal } from "antd";
 import styled from "styled-components";
 
 export const LayoutWrapper = styled.div`
@@ -15,6 +16,10 @@ export const HeaderWrapper = styled.div`
   padding: 0 20px;
 
   .header-contain {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
     .logo {
       height: 50px;
       width: 50px;
@@ -28,5 +33,39 @@ export const HeaderWrapper = styled.div`
         border-radius: 50%;
       }
     }
+
+    .header-right {
+      display: flex;
+      .notification {
+        height: 42px;
+        width: 42px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #e4e6eb;
+        margin-right: 20px;
+        cursor: pointer;
+        img {
+          width: 25px;
+        }
+
+        .ant-badge-count {
+          top: -6px;
+          right: -10px;
+        }
+      }
+
+      .avatar {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        .avatar-img {
+          margin-right: 10px;
+        }
+      }
+    }
   }
 `;
+
+export const ModalUserWrapper = styled(Modal)``;
