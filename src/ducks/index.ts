@@ -1,5 +1,5 @@
-import { combineReducers } from "redux";
-import user from "./user";
+import { AnyAction, combineReducers } from "redux";
+import user, { signOut } from "./user";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import { configureStore } from "@reduxjs/toolkit";
@@ -14,7 +14,19 @@ const appReducer = combineReducers({
   user,
 });
 
-const persistedReducer = persistReducer(persistConfig, appReducer);
+type RootState = ReturnType<typeof appReducer>;
+
+const reducer = (state: RootState | undefined, action: AnyAction) => {
+  switch (action.type) {
+    case signOut.type:
+      return appReducer(undefined, action);
+
+    default:
+      return appReducer(state, action);
+  }
+};
+
+const persistedReducer = persistReducer(persistConfig, reducer);
 
 const store = configureStore({
   reducer: persistedReducer,

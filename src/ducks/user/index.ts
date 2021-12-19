@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-type User = {
+export interface User {
   id: number;
   email: string;
   name: string;
   userId?: string;
   profileImage?: string;
-};
+}
 
 type InitialState = {
   loggedUser: User | null;
@@ -27,9 +27,12 @@ const { reducer, actions } = createSlice({
       const { user } = action.payload;
       state.loggedUser = user;
     },
+    signOut: (state) => {
+      return state;
+    },
   },
 });
 
-export const { setUser } = actions;
+export const { setUser, signOut } = actions;
 
 export default reducer;

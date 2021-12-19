@@ -2,10 +2,8 @@ import { Formik } from "formik";
 import React from "react";
 import { SignupWrapper } from "src/components/signup/style";
 import { Form, Input, SubmitButton, FormItem } from "formik-antd";
-import validateSchema from "src/libs/helpers/yup/login.validate";
 import { Link } from "react-router-dom";
 import useUser from "src/ducks/user/hook";
-import validateSchemaSignup from "src/libs/helpers/yup/signup.validate";
 import validateSchemaResetPass from "src/libs/helpers/yup/resetPassword.yup";
 
 const ComfirmPassword: React.FC<{ userId: string }> = ({ userId }) => {

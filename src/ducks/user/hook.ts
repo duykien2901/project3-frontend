@@ -9,8 +9,10 @@ import {
   removeToken,
   setToken,
 } from "src/libs/helpers/token";
-import { setUser } from ".";
+import { setUser, signOut } from ".";
 import { API_ENDPOINTS } from "src/constants/commom.constant";
+import { useHistory } from "react-router-dom";
+import axiosInstance from "src/services";
 
 const useUser = () => {
   const [loading, setLoading] = useState(false);
@@ -20,6 +22,7 @@ const useUser = () => {
 
   const { loggedUser } = useSelector(userSelector);
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const resendMail = useCallback(async (email, forgot = false) => {
     try {
@@ -43,6 +46,13 @@ const useUser = () => {
         setToken(data.access_token);
         dispatch(setUser({ user: data.user }));
         setLoading(false);
+        setTimeout(() => {
+          history.push("/");
+          notification.success({
+            message: `Xin chào ${data.user.name}`,
+            duration: 1,
+          });
+        }, 200);
       } catch (err: any) {
         const { message, acceptMail } = err.response.data;
         acceptMail
@@ -54,8 +64,14 @@ const useUser = () => {
         setLoading(false);
       }
     },
-    [dispatch, resendMail]
+    [dispatch, history, resendMail]
   );
+
+  const logout = useCallback(() => {
+    removeToken();
+    dispatch(signOut());
+    history.push("/login");
+  }, [dispatch, history]);
 
   const signup = useCallback(async ({ name, password, email }) => {
     setLoading(true);
@@ -86,11 +102,12 @@ const useUser = () => {
           dispatch(setUser({ user: data.user }));
         } else {
           removeToken();
+          history.push("/login");
         }
         setLoading(false);
       } catch (err: any) {
         notification.error({
-          message: err.response.data.message,
+          message: err.response?.data.message,
           duration: 1,
         });
         setLoading(false);
@@ -135,6 +152,20 @@ const useUser = () => {
       });
     }
   }, []);
+
+  const changeAccount = useCallback(
+    async (value, userId) => {
+      const { data }: any = await axiosInstance.patch(
+        `${API_ENDPOINTS.USER}/${userId}`,
+        {
+          value,
+        }
+      );
+      dispatch(setUser({ user: data.user }));
+    },
+    [dispatch]
+  );
+
   return {
     loggedUser,
     login,
@@ -149,6 +180,8 @@ const useUser = () => {
     error,
     forgot,
     changePassword,
+    changeAccount,
+    logout,
   };
 };
 

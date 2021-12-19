@@ -1,25 +1,38 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { HeaderWrapper } from "../style";
 import logo from "src/assets/img/unnamed.png";
 import { Avatar, Badge, Dropdown, Input, Menu } from "antd";
 import { DownOutlined, SearchOutlined } from "@ant-design/icons";
 import searchIcon from "src/assets/img/notification.svg";
 import UserSettingIcon from "src/assets/img/user-settings.svg";
+import LogoutIcon from "src/assets/img/logout.svg";
 import UserSetting from "src/components/layouts/UserSetting";
 import useAccount from "src/ducks/header/account/hook";
+import { useSelector } from "react-redux";
+import { userSelector } from "src/ducks/user/selector";
+import useUser from "src/ducks/user/hook";
 
 const Header: React.FC = () => {
   const { isVisibleSetting, setIsVisibleSetting } = useAccount();
+  const { loggedUser } = useSelector(userSelector);
+  const { logout } = useUser();
+
   const menu = (
     <Menu className="header">
       <Menu.Item
         key={"settings"}
         icon={<img src={UserSettingIcon} alt="user" className="header-menu" />}
         className="user-setting"
+        onClick={() => setIsVisibleSetting(true)}
       >
         Cài đặt
       </Menu.Item>
-      <Menu.Item key={"logout"} className="header-menu">
+      <Menu.Item
+        key={"logout"}
+        className="user-setting"
+        icon={<img src={LogoutIcon} alt="logout" className="header-menu" />}
+        onClick={() => logout()}
+      >
         Đăng xuất
       </Menu.Item>
     </Menu>
@@ -51,7 +64,11 @@ const Header: React.FC = () => {
               placement="bottomRight"
             >
               <span>
-                <Avatar src="K" size={42} className="avatar-img">
+                <Avatar
+                  src={loggedUser?.profileImage}
+                  size={42}
+                  className="avatar-img"
+                >
                   K
                 </Avatar>
                 <DownOutlined />
@@ -60,7 +77,10 @@ const Header: React.FC = () => {
           </div>
         </div>
       </div>
-      <UserSetting isVisibleSetting={isVisibleSetting} />
+      <UserSetting
+        isVisibleSetting={isVisibleSetting}
+        setIsVisibleSetting={setIsVisibleSetting}
+      />
     </HeaderWrapper>
   );
 };

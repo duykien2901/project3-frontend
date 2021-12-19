@@ -68,4 +68,49 @@ export const HeaderWrapper = styled.div`
   }
 `;
 
-export const ModalUserWrapper = styled(Modal)``;
+export const ModalUserWrapper = styled(Modal)`
+  .profile-image {
+    height: 100%;
+    .text-profile {
+      display: flex;
+      justify-content: center;
+    }
+    .ant-upload-picture-card-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80%;
+      .ant-upload {
+        width: 150px;
+        height: 150px;
+        margin: 0;
+
+        img {
+          object-fit: cover;
+          width: inherit;
+          height: inherit;
+        }
+      }
+    }
+  }
+
+  .account-infor {
+    padding: 10px;
+    padding-right: 20px;
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      button {
+        border-radius: 5px;
+      }
+    }
+  }
+`;
+
+export const ModalNameWrapper = styled(Modal)``;

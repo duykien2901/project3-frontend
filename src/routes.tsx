@@ -24,19 +24,19 @@ const Routes = () => {
       <PublicRoute exact path="/signup">
         <SignUpPage />
       </PublicRoute> */}
-      <PublicRoute exact path="/login">
+      <Route exact path="/login">
         <LoginPage />
-      </PublicRoute>
-      <PublicRoute exact path="/signup">
+      </Route>
+      <Route exact path="/signup">
         <SignUpPage />
-      </PublicRoute>
-      <PublicRoute exact path="/verify">
+      </Route>
+      <Route exact path="/verify">
         <Verify />
-      </PublicRoute>
-      <PublicRoute exact path="/forgot">
+      </Route>
+      <Route exact path="/forgot">
         <ForgotPasswordWrapper />
-      </PublicRoute>
-      <Route path="/home">
+      </Route>
+      <Route path={["/home", "/"]}>
         <Layout>
           <Switch>
             <Route path="/home">
