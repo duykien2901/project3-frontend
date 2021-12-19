@@ -113,4 +113,9 @@ export const ModalUserWrapper = styled(Modal)`
   }
 `;
 
-export const ModalNameWrapper = styled(Modal)``;
+export const ModalNameWrapper = styled(Modal)`
+  .submit-btn {
+    display: flex;
+    justify-content: center;
+  }
+`;

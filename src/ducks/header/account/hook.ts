@@ -4,6 +4,8 @@ const useAccount = () => {
   const [isVisibleSetting, setIsVisibleSetting] = useState<boolean>(false);
   const [isVisibleNameSetting, setIsVisibleNameSetting] =
     useState<boolean>(false);
+  const [isVisibleEmailSetting, setIsVisibleEmailSetting] =
+    useState<boolean>(false);
   const toggleAccountSetting = useCallback(() => {}, []);
   return {
     isVisibleSetting,
@@ -11,6 +13,8 @@ const useAccount = () => {
     toggleAccountSetting,
     isVisibleNameSetting,
     setIsVisibleNameSetting,
+    isVisibleEmailSetting,
+    setIsVisibleEmailSetting,
   };
 };
 

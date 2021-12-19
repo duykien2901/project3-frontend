@@ -113,7 +113,7 @@ const useUser = () => {
         setLoading(false);
       }
     }
-  }, [dispatch]);
+  }, [dispatch, history]);
 
   const verifyAccount = useCallback(async ({ userId }) => {
     setLoading(true);
@@ -157,11 +157,14 @@ const useUser = () => {
     async (value, userId) => {
       const { data }: any = await axiosInstance.patch(
         `${API_ENDPOINTS.USER}/${userId}`,
-        {
-          value,
-        }
+        value
       );
-      dispatch(setUser({ user: data.user }));
+      data.message &&
+        notification.info({
+          message: data.message,
+          duration: 1,
+        });
+      data.user && dispatch(setUser({ user: data.user }));
     },
     [dispatch]
   );

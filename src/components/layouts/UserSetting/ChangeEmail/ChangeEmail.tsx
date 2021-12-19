@@ -1,40 +1,47 @@
 import { Formik } from "formik";
-import { Form, Input, SubmitButton, FormItem } from "formik-antd";
-import React, { memo } from "react";
-import useUser from "src/ducks/user/hook";
+import React from "react";
+import { User } from "src/ducks/user";
 import { ModalNameWrapper } from "../../style";
 import * as Yup from "yup";
-import { User } from "src/ducks/user";
+import { Form, FormItem, Input, SubmitButton } from "formik-antd";
+import useUser from "src/ducks/user/hook";
 
-type NameProp = {
-  isVisibleNameSetting: boolean;
-  setIsVisibleNameSetting: (isVisibleNameSetting: boolean) => void;
+type EmailProp = {
+  isVisibleEmailSetting: boolean;
+  setIsVisibleEmailSetting: (isVisibleNameSetting: boolean) => void;
   user: User | null;
 };
 
-const ChangeName: React.FC<NameProp> = ({
-  isVisibleNameSetting,
-  setIsVisibleNameSetting,
+const ChangeEmail: React.FC<EmailProp> = ({
   user,
+  isVisibleEmailSetting,
+  setIsVisibleEmailSetting,
 }) => {
   const { changeAccount } = useUser();
   return (
     <ModalNameWrapper
-      title="Thay đổi tên"
-      visible={isVisibleNameSetting}
+      title="Thay đổi Email"
+      visible={isVisibleEmailSetting}
       footer={false}
-      onCancel={() => setIsVisibleNameSetting(false)}
+      onCancel={() => setIsVisibleEmailSetting(false)}
     >
       <Formik
         initialValues={{
-          name: user?.name,
+          email: user?.email,
         }}
         onSubmit={async (values, { resetForm }) => {
           await changeAccount(values, user?.id);
-          setIsVisibleNameSetting(false);
+          setIsVisibleEmailSetting(false);
+          resetForm({
+            values: {
+              email: user?.email,
+            },
+          });
         }}
         validationSchema={Yup.object({
-          name: Yup.string().required("Tên không để trống"),
+          email: Yup.string()
+            .email("Email phải đúng định dạng")
+            .required("Email không để trống"),
         })}
       >
         {() => {
@@ -43,11 +50,11 @@ const ChangeName: React.FC<NameProp> = ({
               <FormItem
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
-                label={"Tên"}
-                name="name"
+                label={"Email"}
+                name="email"
                 required
               >
-                <Input name="name" size="large" placeholder="Name" />
+                <Input name="email" size="large" placeholder="Email" />
               </FormItem>
               <div className="submit-btn">
                 <SubmitButton className="btn-login" type="primary">
@@ -62,4 +69,4 @@ const ChangeName: React.FC<NameProp> = ({
   );
 };
 
-export default memo(ChangeName);
+export default ChangeEmail;

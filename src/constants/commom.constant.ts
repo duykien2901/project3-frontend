@@ -1,4 +1,4 @@
-export const TOKEN = "access_token";
+export const TOKEN = "auth";
 export const API_ENDPOINTS = {
   USER: "/api/v1/user",
   LOGIN: "/api/v1/login",
