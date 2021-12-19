@@ -1,0 +1,35 @@
+.fb-flex {
+  display: flex;
+}
+
+.fb-align-center {
+  align-items: center;
+}
+
+.fb-align-flex-start {
+  align-items: flex-start;
+}
+
+.fb-align-flex-end {
+  align-items: flex-end;
+}
+
+.fb-justify-center {
+  justify-content: center;
+}
+
+.fb-justify-flex-end {
+  justify-content: flex-end;
+}
+
+.fb-justify-flex-start {
+  justify-content: flex-start;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
