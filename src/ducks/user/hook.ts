@@ -128,6 +128,15 @@ const useUser = () => {
       setError(true);
     }
   }, []);
+
+  const verifyChangeMail = useCallback(async ({ userId, email }) => {
+    setLoading(true);
+    try {
+      await axios.put(API_ENDPOINTS.USER_ACCEPT_MAIL, { userId, email });
+      setLoading(false);
+    } catch (error) {}
+  }, []);
+
   const forgot = useCallback(
     ({ email }) => {
       try {
@@ -138,35 +147,49 @@ const useUser = () => {
     },
     [resendMail]
   );
-  const changePassword = useCallback(async ({ password, userId }) => {
-    try {
-      await axios.post(API_ENDPOINTS.RESET_PASSWORD, { password, userId });
-      Modal.success({
-        content: "Successfully",
-        centered: true,
-      });
-    } catch (err: any) {
-      notification.error({
-        message: err.response.data.message || err.message,
-        duration: 2,
-      });
-    }
-  }, []);
+
+  const changePassword = useCallback(
+    async ({ password, userId, currentPassword }) => {
+      try {
+        await axios.post(API_ENDPOINTS.RESET_PASSWORD, {
+          password,
+          userId,
+          currentPassword,
+        });
+        Modal.success({
+          content: "Successfully",
+          centered: true,
+        });
+      } catch (err: any) {
+        notification.error({
+          message: err.response.data.message || err.message,
+          duration: 2,
+        });
+      }
+    },
+    []
+  );
 
   const changeAccount = useCallback(
-    async (value, userId) => {
-      const { data }: any = await axiosInstance.patch(
-        `${API_ENDPOINTS.USER}/${userId}`,
-        value
-      );
-      data.message &&
-        notification.info({
-          message: data.message,
-          duration: 1,
+    async (value) => {
+      try {
+        const { data }: any = await axiosInstance.patch(
+          `${API_ENDPOINTS.USER}/${loggedUser?.id}`,
+          value
+        );
+        data.message &&
+          notification.info({
+            message: data.message,
+            duration: 1,
+          });
+        data.user && dispatch(setUser({ user: data.user }));
+      } catch (error: any) {
+        notification.error({
+          message: error.response.data.message || error.message,
         });
-      data.user && dispatch(setUser({ user: data.user }));
+      }
     },
-    [dispatch]
+    [dispatch, loggedUser?.id]
   );
 
   return {
@@ -185,6 +208,7 @@ const useUser = () => {
     changePassword,
     changeAccount,
     logout,
+    verifyChangeMail,
   };
 };
 

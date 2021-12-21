@@ -1,5 +1,5 @@
 import { Spin } from "antd";
-import React, { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import PublicRoute from "src/components/commom/public-route";
 import ForgotPasswordWrapper from "src/components/forgot";
@@ -7,12 +7,19 @@ import useUser from "src/ducks/user/hook";
 import DashBoard from "./components/modules/dashboard/dashboard";
 import Layout from "./components/layouts";
 import Verify from "./components/verify";
+import Picker from "emoji-picker-react";
 
 const LoginPage = lazy(() => import("src/components/login"));
 const SignUpPage = lazy(() => import("src/components/signup"));
 
 const Routes = () => {
   const { reAuth } = useUser();
+  const [chosenEmoji, setChosenEmoji] = useState<any>(null);
+
+  const onEmojiClick = (event: any, emojiObject: any) => {
+    setChosenEmoji(emojiObject);
+  };
+  console.log(chosenEmoji?.emoji);
   useEffect(() => {
     reAuth();
   }, [reAuth]);
@@ -31,7 +38,7 @@ const Routes = () => {
       <Route exact path="/signup">
         <SignUpPage />
       </Route>
-      <Route exact path="/verify">
+      <Route path="/verify">
         <Verify />
       </Route>
       <Route exact path="/forgot">
@@ -40,8 +47,19 @@ const Routes = () => {
       <Route path={["/home", "/"]}>
         <Layout>
           <Switch>
-            <Route path="/home">
-              <div></div>
+            <Route path={["/home", "/"]}>
+              <div>
+                {chosenEmoji ? (
+                  <span>You chose: {chosenEmoji?.emoji}</span>
+                ) : (
+                  <span>No emoji Chosen</span>
+                )}
+                <Picker
+                  disableSearchBar={true}
+                  onEmojiClick={onEmojiClick}
+                  skinTone={chosenEmoji?.emoji}
+                />
+              </div>
             </Route>
           </Switch>
         </Layout>

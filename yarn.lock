@@ -5659,6 +5659,11 @@ emittery@^0.7.1:
   resolved "https://registry.npmjs.org/emittery/-/emittery-0.7.2.tgz"
   integrity sha512-A8OG5SR/ij3SsJdWDJdkkSYUjQdCUx6APQXem0SaEePBSRg4eymGYwBkKo1Y6DU+af/Jn2dBQqDBvjnr9Vi8nQ==
 
+emoji-picker-react@^3.4.12:
+  version "3.4.12"
+  resolved "https://registry.yarnpkg.com/emoji-picker-react/-/emoji-picker-react-3.4.12.tgz#4fc7a1f0e00241d3f9bd04172e25a3a08c0d8ada"
+  integrity sha512-i2VRfKRltFJjsY5ste7UPOn24uXcb4yuOVU6u9Cm3gsSc1MvCqr3XsBGhhhK8jPLeDB9llWtFQ6vABZSqNKQxA==
+
 emoji-regex@^7.0.1:
   version "7.0.3"
   resolved "https://registry.npmjs.org/emoji-regex/-/emoji-regex-7.0.3.tgz"

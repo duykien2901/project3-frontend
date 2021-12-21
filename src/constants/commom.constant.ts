@@ -6,4 +6,5 @@ export const API_ENDPOINTS = {
   RESENT: "/api/v1/resend-mail",
   ACCEPT: "/api/v1/signup/accept",
   RESET_PASSWORD: "/api/v1/reset-password",
+  USER_ACCEPT_MAIL: "/api/v1/user/accept-mail",
 };

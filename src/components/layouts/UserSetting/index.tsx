@@ -7,8 +7,9 @@ import { setUser } from "src/ducks/user";
 import { userSelector } from "src/ducks/user/selector";
 import uploadFile from "src/libs/helpers/utils/uploadFile";
 import { ModalUserWrapper } from "../style";
-import ChangeEmail from "./ChangeEmail/ChangeEmail";
-import ChangeName from "./ChangeName/ChangeName";
+import ChangeEmail from "./ChangeEmail";
+import ChangeName from "./ChangeName";
+import ChangePassword from "./ChangePassword";
 
 export type UserSettingProps = {
   isVisibleSetting: boolean;
@@ -25,6 +26,8 @@ const UserSetting: React.FC<UserSettingProps> = ({
     setIsVisibleNameSetting,
     isVisibleEmailSetting,
     setIsVisibleEmailSetting,
+    isVisiblePasswordSetting,
+    setIsVisiblePasswordSetting,
   } = useAccount();
   const [loadingUpload, setLoadingUpload] = useState<boolean>(false);
   const dispatch = useDispatch();
@@ -112,7 +115,12 @@ const UserSetting: React.FC<UserSettingProps> = ({
           </div>
           <div className="content password">
             <div>************</div>
-            <Button type="primary">Change</Button>
+            <Button
+              type="primary"
+              onClick={() => setIsVisiblePasswordSetting(true)}
+            >
+              Change
+            </Button>
           </div>
         </Col>
       </Row>
@@ -125,6 +133,11 @@ const UserSetting: React.FC<UserSettingProps> = ({
         user={loggedUser}
         isVisibleEmailSetting={isVisibleEmailSetting}
         setIsVisibleEmailSetting={setIsVisibleEmailSetting}
+      />
+      <ChangePassword
+        user={loggedUser}
+        isVisiblePasswordSetting={isVisiblePasswordSetting}
+        setIsVisiblePasswordSetting={setIsVisiblePasswordSetting}
       />
     </ModalUserWrapper>
   );

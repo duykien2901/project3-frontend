@@ -2,7 +2,7 @@ import { Formik } from "formik";
 import { Form, Input, SubmitButton, FormItem } from "formik-antd";
 import React, { memo } from "react";
 import useUser from "src/ducks/user/hook";
-import { ModalNameWrapper } from "../../style";
+import { ModalChangeWrapper } from "../../style";
 import * as Yup from "yup";
 import { User } from "src/ducks/user";
 
@@ -19,7 +19,7 @@ const ChangeName: React.FC<NameProp> = ({
 }) => {
   const { changeAccount } = useUser();
   return (
-    <ModalNameWrapper
+    <ModalChangeWrapper
       title="Thay đổi tên"
       visible={isVisibleNameSetting}
       footer={false}
@@ -30,7 +30,7 @@ const ChangeName: React.FC<NameProp> = ({
           name: user?.name,
         }}
         onSubmit={async (values, { resetForm }) => {
-          await changeAccount(values, user?.id);
+          await changeAccount(values);
           setIsVisibleNameSetting(false);
         }}
         validationSchema={Yup.object({
@@ -58,7 +58,7 @@ const ChangeName: React.FC<NameProp> = ({
           );
         }}
       </Formik>
-    </ModalNameWrapper>
+    </ModalChangeWrapper>
   );
 };
 

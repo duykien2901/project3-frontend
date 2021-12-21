@@ -1,7 +1,7 @@
 import { Formik } from "formik";
 import React from "react";
 import { User } from "src/ducks/user";
-import { ModalNameWrapper } from "../../style";
+import { ModalChangeWrapper } from "../../style";
 import * as Yup from "yup";
 import { Form, FormItem, Input, SubmitButton } from "formik-antd";
 import useUser from "src/ducks/user/hook";
@@ -19,7 +19,7 @@ const ChangeEmail: React.FC<EmailProp> = ({
 }) => {
   const { changeAccount } = useUser();
   return (
-    <ModalNameWrapper
+    <ModalChangeWrapper
       title="Thay đổi Email"
       visible={isVisibleEmailSetting}
       footer={false}
@@ -30,7 +30,7 @@ const ChangeEmail: React.FC<EmailProp> = ({
           email: user?.email,
         }}
         onSubmit={async (values, { resetForm }) => {
-          await changeAccount(values, user?.id);
+          await changeAccount({ ...values, userId: user?.userId });
           setIsVisibleEmailSetting(false);
           resetForm({
             values: {
@@ -65,7 +65,7 @@ const ChangeEmail: React.FC<EmailProp> = ({
           );
         }}
       </Formik>
-    </ModalNameWrapper>
+    </ModalChangeWrapper>
   );
 };
 

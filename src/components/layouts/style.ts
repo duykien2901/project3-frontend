@@ -113,7 +113,7 @@ export const ModalUserWrapper = styled(Modal)`
   }
 `;
 
-export const ModalNameWrapper = styled(Modal)`
+export const ModalChangeWrapper = styled(Modal)`
   .submit-btn {
     display: flex;
     justify-content: center;
