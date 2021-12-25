@@ -8,6 +8,7 @@ import DashBoard from "./components/modules/dashboard/dashboard";
 import Layout from "./components/layouts";
 import Verify from "./components/verify";
 import Picker from "emoji-picker-react";
+import HomeFeed from "./components/layouts/home-feed";
 
 const LoginPage = lazy(() => import("src/components/login"));
 const SignUpPage = lazy(() => import("src/components/signup"));
@@ -48,7 +49,7 @@ const Routes = () => {
         <Layout>
           <Switch>
             <Route path={["/home", "/"]}>
-              <div>
+              {/* <div>
                 {chosenEmoji ? (
                   <span>You chose: {chosenEmoji?.emoji}</span>
                 ) : (
@@ -59,7 +60,8 @@ const Routes = () => {
                   onEmojiClick={onEmojiClick}
                   skinTone={chosenEmoji?.emoji}
                 />
-              </div>
+              </div> */}
+              <HomeFeed />
             </Route>
           </Switch>
         </Layout>
