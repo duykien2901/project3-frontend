@@ -14,6 +14,9 @@ export const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 
   .header-contain {
     display: flex;

@@ -44,5 +44,7 @@ export const GlobalStyle = createGlobalStyle`
       border-radius: 7px;
     }
 
+    
   }  
+  
 `;

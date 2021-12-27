@@ -8,3 +8,18 @@ export const API_ENDPOINTS = {
   RESET_PASSWORD: "/api/v1/reset-password",
   USER_ACCEPT_MAIL: "/api/v1/user/accept-mail",
 };
+
+export const MODE_HIDE: Record<string, any> = {
+  PUBLIC: {
+    text: "Công khai",
+    value: 0,
+  },
+  FRIEND: {
+    text: "Bạn bè",
+    value: 1,
+  },
+  PRIVATE: {
+    text: "Chỉ mình tôi",
+    value: 2,
+  },
+};
