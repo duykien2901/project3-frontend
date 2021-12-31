@@ -1,15 +1,18 @@
-import { Avatar, Dropdown } from "antd";
-import TextArea from "antd/lib/input/TextArea";
+import React, { memo, useMemo } from "react";
+import { Avatar, Dropdown, Mentions, Upload } from "antd";
 import { Formik } from "formik";
 import { Form, FormItem, Select, SubmitButton } from "formik-antd";
-import React, { memo, useMemo } from "react";
+import Picker from "emoji-picker-react";
+import { CloseOutlined } from "@ant-design/icons";
+
 import { MODE_HIDE } from "src/constants/commom.constant";
 import { User } from "src/ducks/user";
 import { PostModalWrapper } from "./style";
-import Picker from "emoji-picker-react";
 import smileIcon from "src/assets/img/smile.svg";
 import uploadIcon from "src/assets/img/upload-image.svg";
 import { LinkPreview } from "@dhaiwat10/react-link-preview";
+import usePost from "src/ducks/home/post/hook";
+import useMentions, { MentionSearch } from "src/ducks/home/post/mentions/hook";
 
 const { Option } = Select;
 
@@ -24,9 +27,39 @@ const CreatePostModal: React.FC<Props> = ({
   setIsVisiblePostModal,
   loggedUser,
 }) => {
+  const {
+    handleChange,
+    beforeUpload,
+    content,
+    setContent,
+    imagePost,
+    deleteImagePost,
+    splitUrlContent,
+    linkPreview,
+    handelSubmit,
+  } = usePost();
+  const {
+    handleSetMentions,
+    handleSearchMentions,
+    mentionSearch,
+    loading,
+    cutStringContent,
+    mentions,
+    setMentions,
+  } = useMentions();
+
   const pickerIcon = useMemo(() => {
-    return <Picker disableSearchBar={true} onEmojiClick={() => {}} />;
-  }, []);
+    return (
+      <Picker
+        disableSearchBar={true}
+        onEmojiClick={(event, emojiObject) => {
+          setContent(content + emojiObject.emoji);
+        }}
+      />
+    );
+  }, [content, setContent]);
+
+  const checkSubmit = content || !!imagePost.length;
 
   return (
     <PostModalWrapper
@@ -34,14 +67,22 @@ const CreatePostModal: React.FC<Props> = ({
       visible={isVisiblePostModal}
       title={"Tạo bài viết"}
       onCancel={() => setIsVisiblePostModal(false)}
-      width={650}
+      width={750}
     >
       <Formik
         initialValues={{
-          content: "",
+          content: content,
           modeHide: MODE_HIDE.PUBLIC.value,
         }}
-        onSubmit={() => {}}
+        onSubmit={async (values) => {
+          await handelSubmit({
+            modeHide: values.modeHide,
+            content,
+            images: imagePost,
+            mentions,
+          });
+          setMentions([]);
+        }}
       >
         {() => {
           return (
@@ -83,32 +124,87 @@ const CreatePostModal: React.FC<Props> = ({
                   wrapperCol={{ span: 24 }}
                   name="content"
                 >
-                  <TextArea
+                  <Mentions
                     name="content"
-                    placeholder="Bạn đang nghĩ gì"
-                    bordered={false}
+                    maxLength={3000}
                     autoSize={{ minRows: 3, maxRows: 8 }}
-                  />
+                    loading={loading}
+                    placeholder={"Bạn đang nghĩ gì"}
+                    value={content}
+                    onChange={(text: string) => {
+                      handleChange(text);
+                      cutStringContent(text);
+                      splitUrlContent(text);
+                    }}
+                    prefix={["@"]}
+                    filterOption={(text: string, props: any) => props}
+                    onSearch={handleSearchMentions}
+                  >
+                    {mentionSearch?.map((item: MentionSearch) => {
+                      return (
+                        <Mentions.Option value={item.name} key={item.userId}>
+                          <div
+                            onClick={() => {
+                              handleSetMentions(item);
+                            }}
+                          >
+                            <Avatar
+                              src={item?.profileImage}
+                              size={30}
+                              className="avatar-img"
+                            >
+                              {item?.name.charAt(0).toUpperCase()}
+                            </Avatar>
+                            <span>{item.name}</span>
+                          </div>
+                        </Mentions.Option>
+                      );
+                    })}
+                  </Mentions>
                 </FormItem>
                 <div className="preview-link">
-                  <LinkPreview
-                    url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                    width="100%"
-                  />
+                  {linkPreview && (
+                    <LinkPreview url={linkPreview} width="100%" />
+                  )}
                 </div>
-                <div className="img-preview"></div>
+
+                {imagePost.map((item) => (
+                  <div className="img-preview">
+                    <img src={item} alt="preview" />
+                    <div
+                      className="close-btn"
+                      onClick={() => deleteImagePost(item)}
+                    >
+                      <span>
+                        <CloseOutlined />
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
               <div className="btn-icon">
                 <div className="title-add">Thêm vào bài viết</div>
                 <div className="icon">
-                  <img src={uploadIcon} alt="upload" />
+                  <Upload
+                    accept={".png,.jpg,.jpeg"}
+                    name="avatar"
+                    listType="picture-card"
+                    showUploadList={false}
+                    beforeUpload={beforeUpload}
+                  >
+                    <img src={uploadIcon} alt="upload" />
+                  </Upload>
                   <Dropdown overlay={pickerIcon} trigger={["click"]}>
                     <img src={smileIcon} alt="" />
                   </Dropdown>
                 </div>
               </div>
               <div className="btn-submit">
-                <SubmitButton type="primary" size="large">
+                <SubmitButton
+                  type="primary"
+                  size="large"
+                  disabled={!checkSubmit}
+                >
                   Đăng
                 </SubmitButton>
               </div>

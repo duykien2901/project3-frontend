@@ -20,7 +20,7 @@ const Routes = () => {
   const onEmojiClick = (event: any, emojiObject: any) => {
     setChosenEmoji(emojiObject);
   };
-  console.log(chosenEmoji?.emoji);
+
   useEffect(() => {
     reAuth();
   }, [reAuth]);

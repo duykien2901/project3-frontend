@@ -217,6 +217,49 @@ export const PostModalWrapper = styled(Modal)`
       ::-webkit-scrollbar-thumb:hover {
         background: #888;
       }
+
+      .ant-mentions {
+        border: none !important;
+        :hover {
+          border: none !important;
+        }
+      }
+
+      .ant-mentions-focused {
+        border: none !important;
+        box-shadow: none;
+      }
+
+      .img-preview {
+        width: 100%;
+        margin: 25px 0;
+        border: 1px solid #ced0d4;
+        border-radius: 10px;
+        position: relative;
+        img {
+          width: 100%;
+          height: inherit;
+          object-fit: contain;
+          border-radius: 10px;
+        }
+        .close-btn {
+          display: inline;
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          border: 1px solid #ced0d4;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          :hover {
+            background-color: #dbdbdb;
+          }
+        }
+      }
     }
 
     .btn-icon {
@@ -230,6 +273,17 @@ export const PostModalWrapper = styled(Modal)`
       border-radius: 12px;
       margin-right: 24px;
       padding: 10px 20px;
+
+      .icon {
+        display: flex;
+        align-items: center;
+        .ant-upload {
+          border: none;
+          background-color: #fff;
+          margin: 0;
+          height: auto;
+        }
+      }
       .title-add {
         font-size: 17px;
         font-weight: 600;
@@ -244,7 +298,9 @@ export const PostModalWrapper = styled(Modal)`
     textarea {
       font-size: 24px;
       color: #000;
+      white-space: pre-line;
     }
+
     .btn-submit {
       display: flex;
       justify-content: center;

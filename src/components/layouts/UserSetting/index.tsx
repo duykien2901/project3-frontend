@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import useAccount from "src/ducks/header/account/hook";
 import { setUser } from "src/ducks/user";
 import { userSelector } from "src/ducks/user/selector";
-import uploadFile from "src/libs/helpers/utils/uploadFile";
+import uploadFile from "src/libs/helpers/utils/uploadFileUser";
 import { ModalUserWrapper } from "../style";
 import ChangeEmail from "./ChangeEmail";
 import ChangeName from "./ChangeName";
