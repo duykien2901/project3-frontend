@@ -14,6 +14,9 @@ export const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 
   .header-contain {
     display: flex;
@@ -113,4 +116,9 @@ export const ModalUserWrapper = styled(Modal)`
   }
 `;
 
-export const ModalNameWrapper = styled(Modal)``;
+export const ModalChangeWrapper = styled(Modal)`
+  .submit-btn {
+    display: flex;
+    justify-content: center;
+  }
+`;

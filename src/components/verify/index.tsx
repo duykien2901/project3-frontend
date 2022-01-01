@@ -7,13 +7,20 @@ import { Button, Spin } from "antd";
 import useUser from "src/ducks/user/hook";
 
 const Verify: React.FC = () => {
-  const { loading, verifyAccount, error } = useUser();
+  const { loading, verifyAccount, error, verifyChangeMail } = useUser();
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  const search: any = new URLSearchParams(window.location.search);
 
   useEffect(() => {
     const search: any = new URLSearchParams(window.location.search);
-    search && verifyAccount({ userId: search.get("accept") });
-  }, [verifyAccount]);
+    search && !search.get("mail")
+      ? verifyAccount({ userId: search.get("accept") })
+      : verifyChangeMail({
+          userId: search.get("accept"),
+          email: decodeURIComponent(search.get("mail")),
+        });
+  }, [verifyAccount, verifyChangeMail]);
+
   return (
     <SignupWrapper>
       <div className="login-page">
@@ -27,7 +34,11 @@ const Verify: React.FC = () => {
               </div>
               <div className="content">
                 <div className="title">
-                  {!error ? "Register successfully" : "Something went wrong"}
+                  {!error
+                    ? search.get("mail")
+                      ? "Change mail Successfully"
+                      : "Register successfully"
+                    : "Something went wrong"}
                 </div>
               </div>
               <div className="btn">

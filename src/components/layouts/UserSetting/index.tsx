@@ -5,9 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import useAccount from "src/ducks/header/account/hook";
 import { setUser } from "src/ducks/user";
 import { userSelector } from "src/ducks/user/selector";
-import uploadFile from "src/libs/helpers/utils/uploadFile";
+import uploadFile from "src/libs/helpers/utils/uploadFileUser";
 import { ModalUserWrapper } from "../style";
-import ChangeName from "./ChangeName/ChangeName";
+import ChangeEmail from "./ChangeEmail";
+import ChangeName from "./ChangeName";
+import ChangePassword from "./ChangePassword";
 
 export type UserSettingProps = {
   isVisibleSetting: boolean;
@@ -19,7 +21,14 @@ const UserSetting: React.FC<UserSettingProps> = ({
   setIsVisibleSetting,
 }) => {
   const { loggedUser } = useSelector(userSelector);
-  const { isVisibleNameSetting, setIsVisibleNameSetting } = useAccount();
+  const {
+    isVisibleNameSetting,
+    setIsVisibleNameSetting,
+    isVisibleEmailSetting,
+    setIsVisibleEmailSetting,
+    isVisiblePasswordSetting,
+    setIsVisiblePasswordSetting,
+  } = useAccount();
   const [loadingUpload, setLoadingUpload] = useState<boolean>(false);
   const dispatch = useDispatch();
 
@@ -78,7 +87,7 @@ const UserSetting: React.FC<UserSettingProps> = ({
         </Col>
         <Col span={16} className="account-infor">
           <div className="title">
-            <div>Name</div>
+            <div>Tên</div>
           </div>
           <div className="content name">
             <div>{loggedUser?.name}</div>
@@ -94,14 +103,24 @@ const UserSetting: React.FC<UserSettingProps> = ({
           </div>
           <div className="content email">
             <div>{loggedUser?.email}</div>
-            <Button type="primary">Change</Button>
+            <Button
+              type="primary"
+              onClick={() => setIsVisibleEmailSetting(true)}
+            >
+              Change
+            </Button>
           </div>
           <div className="title">
-            <div>Password</div>
+            <div>Mật khẩu</div>
           </div>
           <div className="content password">
             <div>************</div>
-            <Button type="primary">Change</Button>
+            <Button
+              type="primary"
+              onClick={() => setIsVisiblePasswordSetting(true)}
+            >
+              Change
+            </Button>
           </div>
         </Col>
       </Row>
@@ -109,6 +128,16 @@ const UserSetting: React.FC<UserSettingProps> = ({
         isVisibleNameSetting={isVisibleNameSetting}
         setIsVisibleNameSetting={setIsVisibleNameSetting}
         user={loggedUser}
+      />
+      <ChangeEmail
+        user={loggedUser}
+        isVisibleEmailSetting={isVisibleEmailSetting}
+        setIsVisibleEmailSetting={setIsVisibleEmailSetting}
+      />
+      <ChangePassword
+        user={loggedUser}
+        isVisiblePasswordSetting={isVisiblePasswordSetting}
+        setIsVisiblePasswordSetting={setIsVisiblePasswordSetting}
       />
     </ModalUserWrapper>
   );

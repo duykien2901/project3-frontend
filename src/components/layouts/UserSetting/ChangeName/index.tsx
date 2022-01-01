@@ -1,8 +1,8 @@
 import { Formik } from "formik";
 import { Form, Input, SubmitButton, FormItem } from "formik-antd";
-import React from "react";
+import React, { memo } from "react";
 import useUser from "src/ducks/user/hook";
-import { ModalNameWrapper } from "../../style";
+import { ModalChangeWrapper } from "../../style";
 import * as Yup from "yup";
 import { User } from "src/ducks/user";
 
@@ -19,7 +19,7 @@ const ChangeName: React.FC<NameProp> = ({
 }) => {
   const { changeAccount } = useUser();
   return (
-    <ModalNameWrapper
+    <ModalChangeWrapper
       title="Thay đổi tên"
       visible={isVisibleNameSetting}
       footer={false}
@@ -30,12 +30,8 @@ const ChangeName: React.FC<NameProp> = ({
           name: user?.name,
         }}
         onSubmit={async (values, { resetForm }) => {
-          await changeAccount(values, user?.id);
-          resetForm({
-            values: {
-              name: "",
-            },
-          });
+          await changeAccount(values);
+          setIsVisibleNameSetting(false);
         }}
         validationSchema={Yup.object({
           name: Yup.string().required("Tên không để trống"),
@@ -47,21 +43,23 @@ const ChangeName: React.FC<NameProp> = ({
               <FormItem
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
-                label={"Name"}
+                label={"Tên"}
                 name="name"
                 required
               >
                 <Input name="name" size="large" placeholder="Name" />
               </FormItem>
-              <SubmitButton className="btn-login" type="primary" size="large">
-                Save
-              </SubmitButton>
+              <div className="submit-btn">
+                <SubmitButton className="btn-login" type="primary">
+                  Save
+                </SubmitButton>
+              </div>
             </Form>
           );
         }}
       </Formik>
-    </ModalNameWrapper>
+    </ModalChangeWrapper>
   );
 };
 
-export default ChangeName;
+export default memo(ChangeName);

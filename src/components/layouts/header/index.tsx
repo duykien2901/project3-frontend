@@ -69,7 +69,7 @@ const Header: React.FC = () => {
                   size={42}
                   className="avatar-img"
                 >
-                  K
+                  {loggedUser?.name.charAt(0).toUpperCase()}
                 </Avatar>
                 <DownOutlined />
               </span>
