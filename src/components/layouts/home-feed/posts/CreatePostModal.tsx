@@ -38,6 +38,7 @@ const CreatePostModal: React.FC<Props> = ({
     linkPreview,
     handelSubmit,
   } = usePost();
+
   const {
     handleSetMentions,
     handleSearchMentions,
@@ -60,7 +61,7 @@ const CreatePostModal: React.FC<Props> = ({
   }, [content, setContent]);
 
   const checkSubmit = content || !!imagePost.length;
-
+  console.log(mentions);
   return (
     <PostModalWrapper
       footer={false}
@@ -81,6 +82,7 @@ const CreatePostModal: React.FC<Props> = ({
             images: imagePost,
             mentions,
           });
+          setIsVisiblePostModal(false);
           setMentions([]);
         }}
       >
@@ -142,7 +144,10 @@ const CreatePostModal: React.FC<Props> = ({
                   >
                     {mentionSearch?.map((item: MentionSearch) => {
                       return (
-                        <Mentions.Option value={item.name} key={item.userId}>
+                        <Mentions.Option
+                          value={item.name.replace(/\s/g, "")}
+                          key={item.userId}
+                        >
                           <div
                             onClick={() => {
                               handleSetMentions(item);

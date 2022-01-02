@@ -1,13 +1,13 @@
 import { Spin } from "antd";
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import PublicRoute from "src/components/commom/public-route";
+// import PublicRoute from "src/components/commom/public-route";
 import ForgotPasswordWrapper from "src/components/forgot";
 import useUser from "src/ducks/user/hook";
-import DashBoard from "./components/modules/dashboard/dashboard";
+// import DashBoard from "./components/modules/dashboard/dashboard";
 import Layout from "./components/layouts";
 import Verify from "./components/verify";
-import Picker from "emoji-picker-react";
+// import Picker from "emoji-picker-react";
 import HomeFeed from "./components/layouts/home-feed";
 
 const LoginPage = lazy(() => import("src/components/login"));
@@ -15,11 +15,6 @@ const SignUpPage = lazy(() => import("src/components/signup"));
 
 const Routes = () => {
   const { reAuth } = useUser();
-  const [chosenEmoji, setChosenEmoji] = useState<any>(null);
-
-  const onEmojiClick = (event: any, emojiObject: any) => {
-    setChosenEmoji(emojiObject);
-  };
 
   useEffect(() => {
     reAuth();

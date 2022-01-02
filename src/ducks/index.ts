@@ -1,5 +1,6 @@
 import { AnyAction, combineReducers } from "redux";
 import user, { signOut } from "./user";
+import posts from "./home/post";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import { configureStore } from "@reduxjs/toolkit";
@@ -12,6 +13,7 @@ const persistConfig = {
 
 const appReducer = combineReducers({
   user,
+  posts,
 });
 
 type RootState = ReturnType<typeof appReducer>;
