@@ -1,30 +1,41 @@
 import { Spin } from "antd";
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import PublicRoute from "src/components/commom/public-route";
+// import PublicRoute from "src/components/commom/public-route";
 import ForgotPasswordWrapper from "src/components/forgot";
 import useUser from "src/ducks/user/hook";
-import DashBoard from "./components/modules/dashboard/dashboard";
+// import DashBoard from "./components/modules/dashboard/dashboard";
 import Layout from "./components/layouts";
 import Verify from "./components/verify";
-import Picker from "emoji-picker-react";
+// import Picker from "emoji-picker-react";
 import HomeFeed from "./components/layouts/home-feed";
+import ProfileUser from "./components/layouts/home-feed/posts/ProfileUser";
+import PostHomeFeed from "./components/layouts/home-feed/posts";
 
 const LoginPage = lazy(() => import("src/components/login"));
 const SignUpPage = lazy(() => import("src/components/signup"));
 
 const Routes = () => {
   const { reAuth } = useUser();
-  const [chosenEmoji, setChosenEmoji] = useState<any>(null);
-
-  const onEmojiClick = (event: any, emojiObject: any) => {
-    setChosenEmoji(emojiObject);
-  };
 
   useEffect(() => {
     reAuth();
   }, [reAuth]);
 
+  const BaseHomeFeedRoute = () => {
+    return (
+      <HomeFeed>
+        <Switch>
+          <Route path={"/user/:userId"}>
+            <ProfileUser />
+          </Route>
+          <Route path={"/"}>
+            <PostHomeFeed />
+          </Route>
+        </Switch>
+      </HomeFeed>
+    );
+  };
   return (
     <Switch>
       {/* <PublicRoute exact path="/login">
@@ -48,21 +59,7 @@ const Routes = () => {
       <Route path={["/home", "/"]}>
         <Layout>
           <Switch>
-            <Route path={["/home", "/"]}>
-              {/* <div>
-                {chosenEmoji ? (
-                  <span>You chose: {chosenEmoji?.emoji}</span>
-                ) : (
-                  <span>No emoji Chosen</span>
-                )}
-                <Picker
-                  disableSearchBar={true}
-                  onEmojiClick={onEmojiClick}
-                  skinTone={chosenEmoji?.emoji}
-                />
-              </div> */}
-              <HomeFeed />
-            </Route>
+            <Route path={["/home", "/"]}>{BaseHomeFeedRoute()}</Route>
           </Switch>
         </Layout>
       </Route>

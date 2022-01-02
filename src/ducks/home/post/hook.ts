@@ -1,12 +1,13 @@
 import { notification } from "antd";
 import { useCallback, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { API_ENDPOINTS } from "src/constants/commom.constant";
+import { PAGINATION } from "src/constants/post.constant";
 import { userSelector } from "src/ducks/user/selector";
-import { Post } from "src/interfaces";
 import uploadFile from "src/libs/helpers/utils/uploadFile";
 import isUrl from "src/libs/helpers/utils/url";
 import axiosInstance from "src/services";
+import { Post, setAllPost } from ".";
 import { MentionSearch } from "./mentions/hook";
 
 const usePost = () => {
@@ -16,8 +17,11 @@ const usePost = () => {
   const [imagePost, setImagePost] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [linkPreview, setLinkPreview] = useState<string>("");
+  const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
   const { loggedUser } = useSelector(userSelector);
 
+  const dispatch = useDispatch();
   const setInitial = () => {
     setContent("");
     setImagePost([]);
@@ -94,6 +98,24 @@ const usePost = () => {
     [loggedUser?.id]
   );
 
+  const getPost = useCallback(async () => {
+    setIsLoadingPost(true);
+    try {
+      const { data } = await axiosInstance.get(
+        `${API_ENDPOINTS.POST}?limit=${PAGINATION.LIMIT * page}&offset=${
+          PAGINATION.OFFSET * (page - 1)
+        }`
+      );
+      dispatch(setAllPost({ posts: data.posts, total: data.total }));
+      setIsLoadingPost(false);
+    } catch (error: any) {
+      notification.error({
+        message: error.message,
+      });
+      setIsLoadingPost(false);
+    }
+  }, [dispatch, page]);
+
   return {
     isVisiblePostModal,
     setIsVisiblePostModal,
@@ -111,6 +133,10 @@ const usePost = () => {
     splitUrlContent,
     linkPreview,
     handelSubmit,
+    isLoadingPost,
+    getPost,
+    setLinkPreview,
+    setPage,
   };
 };
 

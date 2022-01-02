@@ -1,5 +1,5 @@
 import { notification } from "antd";
-import { debounce, DebouncedFunc } from "lodash";
+import { debounce } from "lodash";
 import { useCallback, useMemo, useState } from "react";
 import { API_ENDPOINTS } from "src/constants/commom.constant";
 import axios from "src/services";
@@ -54,7 +54,9 @@ const useMentions = () => {
       let cloneMentions = [...mentions];
       let change: boolean = false;
       mentions.forEach((mention, index) => {
-        const indexMention = content.indexOf(`@${mention.name}`);
+        const indexMention = content.indexOf(
+          `@${mention.name.replace(/\s/g, "")}`
+        );
         if (indexMention === -1) {
           cloneMentions.splice(index, 1);
           change = true;

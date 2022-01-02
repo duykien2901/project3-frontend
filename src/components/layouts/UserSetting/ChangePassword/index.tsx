@@ -3,7 +3,6 @@ import React from "react";
 import { User } from "src/ducks/user";
 import useUser from "src/ducks/user/hook";
 import { ModalChangeWrapper } from "../../style";
-import * as Yup from "yup";
 import { Form, FormItem, Input, SubmitButton } from "formik-antd";
 import validateSchemaChangePass from "src/libs/helpers/yup/changePassword.validate";
 
@@ -18,7 +17,7 @@ const ChangePassword: React.FC<PasswordProp> = ({
   isVisiblePasswordSetting,
   setIsVisiblePasswordSetting,
 }) => {
-  const { changeAccount, changePassword } = useUser();
+  const { changePassword } = useUser();
   return (
     <ModalChangeWrapper
       title="Thay đổi password"

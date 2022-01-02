@@ -5,7 +5,7 @@ import PostHomeFeed from "./posts";
 import { HomeFeedWrapper } from "./style";
 import SidebarRight from "./sidebar-right/sidebar-right";
 
-const HomeFeed: React.FC = () => {
+const HomeFeed: React.FC = ({ children }) => {
   return (
     <HomeFeedWrapper>
       <Col xl={7} lg={7} md={6}>
@@ -13,7 +13,7 @@ const HomeFeed: React.FC = () => {
       </Col>
 
       <Col xl={10} lg={10} md={12}>
-        <PostHomeFeed />
+        {children}
       </Col>
 
       <Col xl={7} lg={7} md={6}>
