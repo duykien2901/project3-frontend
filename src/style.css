@@ -33,3 +33,10 @@
 .h-full {
   height: 100%;
 }
+
+.btn {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background: none;
+}
