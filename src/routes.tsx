@@ -9,6 +9,8 @@ import Layout from "./components/layouts";
 import Verify from "./components/verify";
 // import Picker from "emoji-picker-react";
 import HomeFeed from "./components/layouts/home-feed";
+import ProfileUser from "./components/layouts/home-feed/posts/ProfileUser";
+import PostHomeFeed from "./components/layouts/home-feed/posts";
 
 const LoginPage = lazy(() => import("src/components/login"));
 const SignUpPage = lazy(() => import("src/components/signup"));
@@ -20,6 +22,20 @@ const Routes = () => {
     reAuth();
   }, [reAuth]);
 
+  const BaseHomeFeedRoute = () => {
+    return (
+      <HomeFeed>
+        <Switch>
+          <Route path={"/user/:userId"}>
+            <ProfileUser />
+          </Route>
+          <Route path={"/"}>
+            <PostHomeFeed />
+          </Route>
+        </Switch>
+      </HomeFeed>
+    );
+  };
   return (
     <Switch>
       {/* <PublicRoute exact path="/login">
@@ -43,21 +59,7 @@ const Routes = () => {
       <Route path={["/home", "/"]}>
         <Layout>
           <Switch>
-            <Route path={["/home", "/"]}>
-              {/* <div>
-                {chosenEmoji ? (
-                  <span>You chose: {chosenEmoji?.emoji}</span>
-                ) : (
-                  <span>No emoji Chosen</span>
-                )}
-                <Picker
-                  disableSearchBar={true}
-                  onEmojiClick={onEmojiClick}
-                  skinTone={chosenEmoji?.emoji}
-                />
-              </div> */}
-              <HomeFeed />
-            </Route>
+            <Route path={["/home", "/"]}>{BaseHomeFeedRoute()}</Route>
           </Switch>
         </Layout>
       </Route>
