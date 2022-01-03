@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useCallback, useEffect, useMemo } from "react";
 import { Avatar, Dropdown, Mentions, Upload } from "antd";
 import { Formik } from "formik";
 import { Form, FormItem, Select, SubmitButton } from "formik-antd";
@@ -13,6 +13,9 @@ import uploadIcon from "src/assets/img/upload-image.svg";
 import { LinkPreview } from "@dhaiwat10/react-link-preview";
 import usePost from "src/ducks/home/post/hook";
 import useMentions, { MentionSearch } from "src/ducks/home/post/mentions/hook";
+import { useDispatch, useSelector } from "react-redux";
+import { postSelector } from "src/ducks/home/post/selector";
+import { setPostDetail } from "src/ducks/home/post";
 
 const { Option } = Select;
 
@@ -27,6 +30,8 @@ const CreatePostModal: React.FC<Props> = ({
   setIsVisiblePostModal,
   loggedUser,
 }) => {
+  const { postDetail } = useSelector(postSelector);
+  const dispatch = useDispatch();
   const {
     handleChange,
     beforeUpload,
@@ -37,6 +42,8 @@ const CreatePostModal: React.FC<Props> = ({
     splitUrlContent,
     linkPreview,
     handelSubmit,
+    setImagePost,
+    setInitial,
   } = usePost();
 
   const {
@@ -48,6 +55,22 @@ const CreatePostModal: React.FC<Props> = ({
     mentions,
     setMentions,
   } = useMentions();
+
+  useEffect(() => {
+    if (postDetail) {
+      setImagePost(postDetail.images);
+      setMentions(postDetail.mentions);
+      setContent(postDetail.content);
+      splitUrlContent(postDetail.content);
+    }
+  }, [postDetail, setContent, setImagePost, setMentions, splitUrlContent]);
+
+  const resetFormPost = useCallback(() => {
+    setIsVisiblePostModal(false);
+    dispatch(setPostDetail({ post: null }));
+    setInitial();
+    setMentions([]);
+  }, [dispatch, setInitial, setIsVisiblePostModal, setMentions]);
 
   const pickerIcon = useMemo(() => {
     return (
@@ -61,19 +84,21 @@ const CreatePostModal: React.FC<Props> = ({
   }, [content, setContent]);
 
   const checkSubmit = content || !!imagePost.length;
-  console.log(mentions);
+
   return (
     <PostModalWrapper
       footer={false}
       visible={isVisiblePostModal}
       title={"Tạo bài viết"}
-      onCancel={() => setIsVisiblePostModal(false)}
+      onCancel={() => {
+        resetFormPost();
+      }}
       width={750}
     >
       <Formik
         initialValues={{
           content: content,
-          modeHide: MODE_HIDE.PUBLIC.value,
+          modeHide: postDetail ? postDetail.modeHide : MODE_HIDE.PUBLIC.value,
         }}
         onSubmit={async (values) => {
           await handelSubmit({
@@ -81,9 +106,10 @@ const CreatePostModal: React.FC<Props> = ({
             content,
             images: imagePost,
             mentions,
+            isUpdate: !!postDetail,
+            id: postDetail?.id,
           });
-          setIsVisiblePostModal(false);
-          setMentions([]);
+          resetFormPost();
         }}
       >
         {() => {
@@ -110,7 +136,7 @@ const CreatePostModal: React.FC<Props> = ({
                         name="modeHide"
                       >
                         {Object.keys(MODE_HIDE).map((item: string) => (
-                          <Option value={MODE_HIDE[item].value}>
+                          <Option value={MODE_HIDE[item].value} key={item}>
                             {MODE_HIDE[item].text}
                           </Option>
                         ))}
@@ -174,7 +200,7 @@ const CreatePostModal: React.FC<Props> = ({
                 </div>
 
                 {imagePost.map((item) => (
-                  <div className="img-preview">
+                  <div className="img-preview" key={item}>
                     <img src={item} alt="preview" />
                     <div
                       className="close-btn"

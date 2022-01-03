@@ -2,6 +2,8 @@ import { Modal } from "antd";
 import styled from "styled-components";
 
 export const PostHomeFeedWrapper = styled.div`
+  /* height: 60vh;
+  overflow: auto; */
   .post-create {
     width: 100%;
     background: #fff;
@@ -90,6 +92,16 @@ export const PostDetailWrapper = styled.div`
   border-radius: 10px;
   padding: 20px 25px;
 
+  .reaction {
+    height: 30px;
+    span {
+      img {
+        cursor: pointer;
+        height: 30px;
+      }
+    }
+  }
+
   .title {
     display: flex;
     justify-content: space-between;
@@ -150,6 +162,9 @@ export const PostDetailWrapper = styled.div`
     margin-bottom: 30px;
     font-size: 18px;
     white-space: pre;
+    a {
+      white-space: normal;
+    }
   }
 
   .img-content {

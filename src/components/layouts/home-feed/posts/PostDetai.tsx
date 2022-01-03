@@ -3,7 +3,7 @@ import {
   LeftOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import { Carousel, Dropdown, Image, Menu } from "antd";
+import { Carousel, Dropdown, Image, Menu, Popover } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Post } from "src/ducks/home/post";
@@ -13,50 +13,73 @@ import { PostDetailWrapper } from "./style";
 import publicIcon from "src/assets/img/globalMode.svg";
 import friendIcon from "src/assets/img/friendMode.svg";
 import privateIcon from "src/assets/img/privateMode.svg";
+import editIcon from "src/assets/img/edit.svg";
+import deleteIcon from "src/assets/img/delete.svg";
+import likeIcon from "src/assets/img/like.svg";
+import sadIcon from "src/assets/img/sad.svg";
+import likeNewIcon from "src/assets/img/like-new.svg";
+import hahaIcon from "src/assets/img/haha.svg";
+import argryIcon from "src/assets/img/angry.svg";
+import careIcon from "src/assets/img/care.svg";
+import loveIcon from "src/assets/img/love.svg";
+
 import { MODE_HIDE } from "src/constants/commom.constant";
 import { LinkPreview } from "@dhaiwat10/react-link-preview";
 import { MentionSearch } from "src/ducks/home/post/mentions/hook";
 import { Link } from "react-router-dom";
 import isUrl from "src/libs/helpers/utils/url";
+import usePost from "src/ducks/home/post/hook";
 
 export type PostDetail = {
   loggedUser: User | null;
   postDetail: Post;
+  setIsVisiblePostModal: (isVisible: boolean) => void;
 };
 
-const PostDetai: React.FC<PostDetail> = ({ loggedUser, postDetail }) => {
+const PostDetai: React.FC<PostDetail> = ({
+  loggedUser,
+  postDetail,
+  setIsVisiblePostModal,
+}) => {
   const [arrow, setArrow] = useState({ l: false, r: false });
   const { owner, images } = postDetail;
   const [linkPreview, setLinkPreview] = useState("");
+  const { deletePostById, showUpdatePost } = usePost();
 
   useEffect(() => {
     postDetail.images.length > 0 && setArrow({ l: false, r: true });
   }, [postDetail.images]);
 
-  const menu = useMemo(() => {
-    return (
-      <Menu className="header">
-        <Menu.Item
-          key={"edit"}
-          // icon={
-          //   <img src={UserSettingIcon} alt="user" className="header-menu" />
-          // }
-          className="user-setting"
-          // onClick={() => setIsVisibleSetting(true)}
-        >
-          Xóa bài viết
-        </Menu.Item>
-        <Menu.Item
-          key={"logout"}
-          className="user-setting"
-          // icon={<img src={LogoutIcon} alt="logout" className="header-menu" />}
-          // onClick={() => logout()}
-        >
-          Sửa bài viết
-        </Menu.Item>
-      </Menu>
-    );
-  }, []);
+  const menu = useCallback(
+    (item: any) => {
+      return (
+        <Menu className="header">
+          <Menu.Item
+            key={"logout"}
+            className="user-setting"
+            icon={
+              <img src={editIcon} alt="edit icon" className="header-menu" />
+            }
+            onClick={() => {
+              showUpdatePost(item);
+              setIsVisiblePostModal(true);
+            }}
+          >
+            Sửa bài viết
+          </Menu.Item>
+          <Menu.Item
+            key={"edit"}
+            icon={<img src={deleteIcon} alt="delete" className="header-menu" />}
+            className="user-setting"
+            onClick={() => deletePostById(item.id)}
+          >
+            Xóa bài viết
+          </Menu.Item>
+        </Menu>
+      );
+    },
+    [deletePostById, showUpdatePost, setIsVisiblePostModal]
+  );
 
   const typeMode = useCallback((type: number) => {
     const { PRIVATE, FRIEND } = MODE_HIDE;
@@ -83,21 +106,56 @@ const PostDetai: React.FC<PostDetail> = ({ loggedUser, postDetail }) => {
     [postDetail.images]
   );
 
-  const checkMentions = useCallback(
-    (item: string, mentions: MentionSearch[]) => {
-      const mention = mentions.find(
-        (user: MentionSearch) =>
-          user.name.replace(/\s/g, "") === item.substring(1)
-      );
-      if (mention) return <Link to={"#"}>{item} </Link>;
-      else return item + " ";
-    },
-    []
-  );
+  const inforMention = useCallback((item: MentionSearch) => {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <span
+          className="avatar"
+          style={{
+            marginRight: "15px",
+            borderRadius: "50%",
+            border: "0.5px solid #b1b1b1",
+          }}
+        >
+          <Avatar src={item?.profileImage} size={45}>
+            {item?.name.charAt(0).toUpperCase()}
+          </Avatar>
+        </span>
+        <div>{item.name}</div>
+      </div>
+    );
+  }, []);
 
   const cuttingContent = (content: string) => {
     const splitContent = content.split(" ");
     const { mentions } = postDetail;
+    let mentionsClone = [...mentions];
+
+    const checkMentions = (item: string) => {
+      const mention = mentionsClone.find(
+        (user: MentionSearch) =>
+          user.name.replace(/\s/g, "") === item.substring(1)
+      );
+      if (mention) {
+        // delete filter mention
+        mentionsClone = mentionsClone.filter(
+          (item) => item.userId !== mention.userId
+        );
+        return (
+          <Popover content={inforMention(mention)} title={null}>
+            <Link to={"#"} key={item + Math.random()}>
+              {item}{" "}
+            </Link>
+          </Popover>
+        );
+      } else return item + " ";
+    };
 
     return splitContent.map((item) => {
       // check case include \n
@@ -106,7 +164,7 @@ const PostDetai: React.FC<PostDetail> = ({ loggedUser, postDetail }) => {
         // filter mention or url
         let checkMentionUrl = changeItem.map((item1) => {
           if (item1[0] === "@") {
-            return checkMentions(item1, mentions);
+            return checkMentions(item1);
           }
           if (isUrl(item1)) {
             !linkPreview && setLinkPreview(item1);
@@ -122,7 +180,7 @@ const PostDetai: React.FC<PostDetail> = ({ loggedUser, postDetail }) => {
         return checkMentionUrl;
       }
       if (item[0] === "@") {
-        return checkMentions(item, mentions);
+        return checkMentions(item);
       }
 
       if (isUrl(item)) {
@@ -134,17 +192,42 @@ const PostDetai: React.FC<PostDetail> = ({ loggedUser, postDetail }) => {
           </a>
         );
       }
-      return item === " " ? <>&nbsp;</> : item;
+      return item === " " ? <>&nbsp;</> : item + " ";
     });
   };
 
+  const renderReaction = useMemo(() => {
+    return (
+      <div className="react-container">
+        <span>
+          <img src={likeNewIcon} alt="" />
+        </span>
+        <span>
+          <img src={sadIcon} alt="" />
+        </span>
+        <span>
+          <img src={argryIcon} alt="" />
+        </span>
+        <span>
+          <img src={loveIcon} alt="" />
+        </span>
+        <span>
+          <img src={hahaIcon} alt="" />
+        </span>
+        <span>
+          <img src={careIcon} alt="" />
+        </span>
+      </div>
+    );
+  }, []);
+
   return (
-    <PostDetailWrapper>
+    <PostDetailWrapper key={postDetail.id}>
       <div className="title">
         <div className="author">
           <span className="avatar">
-            <Avatar src={owner.profileImage} size={45}>
-              {owner.name.charAt(0).toUpperCase()}
+            <Avatar src={owner?.profileImage} size={45}>
+              {owner?.name.charAt(0).toUpperCase()}
             </Avatar>
           </span>
           <div className="auth-name">
@@ -157,11 +240,17 @@ const PostDetai: React.FC<PostDetail> = ({ loggedUser, postDetail }) => {
         </div>
 
         <div className="edit-btn">
-          <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
-            <div className="icon-edit">
-              <EllipsisOutlined size={60} />
-            </div>
-          </Dropdown>
+          {postDetail.ownerId === loggedUser?.id && (
+            <Dropdown
+              overlay={menu(postDetail)}
+              trigger={["click"]}
+              placement="bottomRight"
+            >
+              <div className="icon-edit">
+                <EllipsisOutlined size={60} />
+              </div>
+            </Dropdown>
+          )}
         </div>
       </div>
 
@@ -188,6 +277,18 @@ const PostDetai: React.FC<PostDetail> = ({ loggedUser, postDetail }) => {
           <LinkPreview url={linkPreview} width={"100%"} />
         </div>
       )}
+      <div className="reaction">
+        <Popover
+          content={renderReaction}
+          title={null}
+          trigger={"click"}
+          placement="topLeft"
+        >
+          <span>
+            <img src={likeIcon} alt="" />
+          </span>
+        </Popover>
+      </div>
     </PostDetailWrapper>
   );
 };

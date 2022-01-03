@@ -46,5 +46,36 @@ export const GlobalStyle = createGlobalStyle`
 
     
   }  
+  .ant-popover-inner {
+    border-radius: 12px;
+  }
+  .ant-popover-inner-content {
+    padding: 12px 10px;
+    .react-container {
+      height: 30px;
+      width: 260px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      /* position: relative; */
+      span {
+        width: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+          height: 35px;
+          width: 35px;
+          cursor: pointer;
+          transition: height 0.2s;
+          :hover {
+            height: 42px;
+            width: auto;
+          }
+        }
+      }
+    }
+  }
   
 `;

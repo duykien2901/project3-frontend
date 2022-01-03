@@ -24,3 +24,8 @@ export const MODE_HIDE: Record<string, any> = {
     value: 2,
   },
 };
+
+export enum SCROLL_PATH {
+  HOME = "/",
+  USER = "/user",
+}
