@@ -1,13 +1,21 @@
 import { notification } from "antd";
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { API_ENDPOINTS } from "src/constants/commom.constant";
+import { API_ENDPOINTS, SCROLL_PATH } from "src/constants/commom.constant";
 import { PAGINATION } from "src/constants/post.constant";
 import { userSelector } from "src/ducks/user/selector";
 import uploadFile from "src/libs/helpers/utils/uploadFile";
 import isUrl from "src/libs/helpers/utils/url";
 import axiosInstance from "src/services";
-import { Post, setAllPost } from ".";
+import {
+  addPostScroll,
+  createPost,
+  deletePost,
+  Post,
+  setAllPost,
+  setPostDetail,
+  updatePostById,
+} from ".";
 import { MentionSearch } from "./mentions/hook";
 
 const usePost = () => {
@@ -78,16 +86,26 @@ const usePost = () => {
   );
 
   const handelSubmit = useCallback(
-    async ({ modeHide, images, content, mentions }) => {
+    async ({ id, modeHide, images, content, mentions, isUpdate }) => {
+      const dataBody = {
+        ownerId: loggedUser?.id,
+        modeHide,
+        content,
+        mentions: mentions.map((item: MentionSearch) => item.userId),
+        images,
+      };
       try {
-        const { data } = await axiosInstance.post(API_ENDPOINTS.POST, {
-          ownerId: loggedUser?.id,
-          modeHide,
-          content,
-          mentions: mentions.map((item: MentionSearch) => item.userId),
-          images,
-        });
-        console.log(data);
+        if (isUpdate) {
+          const {
+            data: { post },
+          } = await axiosInstance.put(`${API_ENDPOINTS.POST}/${id}`, dataBody);
+          dispatch(updatePostById({ post }));
+        } else {
+          const {
+            data: { post },
+          } = await axiosInstance.post(API_ENDPOINTS.POST, dataBody);
+          dispatch(createPost({ post }));
+        }
         setInitial();
       } catch (error: any) {
         notification.error({
@@ -95,7 +113,7 @@ const usePost = () => {
         });
       }
     },
-    [loggedUser?.id]
+    [dispatch, loggedUser?.id]
   );
 
   const getPost = useCallback(async () => {
@@ -115,6 +133,63 @@ const usePost = () => {
       setIsLoadingPost(false);
     }
   }, [dispatch, page]);
+
+  const deletePostById = useCallback(
+    async (postId: number) => {
+      try {
+        await axiosInstance.delete(`${API_ENDPOINTS.POST}/${postId}`);
+        dispatch(deletePost(postId));
+      } catch (error: any) {
+        notification.error({
+          message: error.message,
+          duration: 1,
+        });
+      }
+    },
+    [dispatch]
+  );
+
+  const showUpdatePost = useCallback(
+    (post: Post) => {
+      console.log(post);
+      dispatch(setPostDetail({ post }));
+    },
+    [dispatch]
+  );
+
+  const handleGetPostScroll = useCallback(
+    async (page: number) => {
+      try {
+        const { data } = await axiosInstance.get(
+          `${API_ENDPOINTS.POST}?limit=${PAGINATION.LIMIT}&offset=${
+            PAGINATION.OFFSET * (page - 1)
+          }`
+        );
+        dispatch(addPostScroll({ posts: data.posts }));
+        setPage(page);
+      } catch (error: any) {
+        notification.error({
+          message: error.message,
+        });
+      }
+    },
+    [dispatch]
+  );
+
+  const handleScrollTop = useCallback(
+    (e: any, path: string) => {
+      const element = e.target;
+      if (element.scrollHeight === element.scrollTop + element.clientHeight) {
+        if (path.includes(SCROLL_PATH.USER)) {
+          return;
+        }
+        if (path.includes(SCROLL_PATH.HOME)) {
+          handleGetPostScroll(page + 1);
+        }
+      }
+    },
+    [handleGetPostScroll, page]
+  );
 
   return {
     isVisiblePostModal,
@@ -137,6 +212,9 @@ const usePost = () => {
     getPost,
     setLinkPreview,
     setPage,
+    deletePostById,
+    showUpdatePost,
+    handleScrollTop,
   };
 };
 

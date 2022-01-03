@@ -8,7 +8,7 @@ import { configureStore } from "@reduxjs/toolkit";
 const persistConfig = {
   key: "root",
   storage,
-  whiteList: ["user"],
+  whitelist: ["user"],
 };
 
 const appReducer = combineReducers({
