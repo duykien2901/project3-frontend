@@ -10,6 +10,7 @@ export const SidebarRightWrapper = styled.div`
       width: 70%;
       height: fit-content;
       background-color: #ffffff;
+      min-width: 288px;
       .title {
         font-weight: 700;
       }

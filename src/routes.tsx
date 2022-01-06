@@ -9,8 +9,9 @@ import Layout from "./components/layouts";
 import Verify from "./components/verify";
 // import Picker from "emoji-picker-react";
 import HomeFeed from "./components/layouts/home-feed";
-import ProfileUser from "./components/layouts/home-feed/posts/ProfileUser";
+import ProfileUser from "./components/layouts/home-feed/posts/ProfileUser/ProfileUser";
 import PostHomeFeed from "./components/layouts/home-feed/posts";
+import ProfileCommunity from "./components/layouts/home-feed/posts/ProfileCommunity/ProfileCommunity";
 
 const LoginPage = lazy(() => import("src/components/login"));
 const SignUpPage = lazy(() => import("src/components/signup"));
@@ -28,6 +29,9 @@ const Routes = () => {
         <Switch>
           <Route path={"/user/:userId"}>
             <ProfileUser />
+          </Route>
+          <Route path={"/community/:communityId"}>
+            <ProfileCommunity />
           </Route>
           <Route path={"/"}>
             <PostHomeFeed />

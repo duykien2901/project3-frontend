@@ -15,11 +15,6 @@ export const CommunityLeftWrapper = styled.div`
           font-weight: 700;
           margin-bottom: 8px;
         }
-        .main-content {
-          .community-item {
-            @extend .feature-item;
-          }
-        }
       }
     }
   }

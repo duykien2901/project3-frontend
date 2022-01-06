@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
   RESET_PASSWORD: "/api/v1/reset-password",
   USER_ACCEPT_MAIL: "/api/v1/user/accept-mail",
   POST: "/api/v1/posts",
+  GROUP: "/api/v1/group",
 };
 
 export const MODE_HIDE: Record<string, any> = {

@@ -2,6 +2,14 @@
   display: flex;
 }
 
+.fb-flex-row {
+  flex-direction: row;
+}
+
+.fb-flex-column {
+  flex-direction: column;
+}
+
 .fb-align-center {
   align-items: center;
 }

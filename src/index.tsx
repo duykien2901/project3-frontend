@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import "./style.css"
 import "./color.css"
+import "./icon.css"
 import "antd/dist/antd.css";
 import { Provider } from "react-redux";
 import store, { persistor } from "src/ducks";
