@@ -22,6 +22,8 @@ import hahaIcon from "src/assets/img/haha.svg";
 import argryIcon from "src/assets/img/angry.svg";
 import careIcon from "src/assets/img/care.svg";
 import loveIcon from "src/assets/img/love.svg";
+import commentIcon from "src/assets/img/comment.svg";
+import shareIcon from "src/assets/img/share.svg";
 
 import { MODE_HIDE } from "src/constants/commom.constant";
 import { LinkPreview } from "@dhaiwat10/react-link-preview";
@@ -29,6 +31,8 @@ import { MentionSearch } from "src/ducks/home/post/mentions/hook";
 import { Link } from "react-router-dom";
 import isUrl from "src/libs/helpers/utils/url";
 import usePost from "src/ducks/home/post/hook";
+import AvatarBase from "src/components/base/avatar/Avatar";
+import CommentPost from "./Comments/CommentPost";
 
 export type PostDetail = {
   loggedUser: User | null;
@@ -225,11 +229,7 @@ const PostDetai: React.FC<PostDetail> = ({
     <PostDetailWrapper key={postDetail.id}>
       <div className="title">
         <div className="author">
-          <span className="avatar">
-            <Avatar src={owner?.profileImage} size={45}>
-              {owner?.name.charAt(0).toUpperCase()}
-            </Avatar>
-          </span>
+          <AvatarBase user={owner} size={45} />
           <div className="auth-name">
             <div className="name">{owner.name}</div>
             <div className="time">
@@ -277,6 +277,7 @@ const PostDetai: React.FC<PostDetail> = ({
           <LinkPreview url={linkPreview} width={"100%"} />
         </div>
       )}
+      <div className="line" />
       <div className="reaction">
         <Popover
           content={renderReaction}
@@ -284,11 +285,24 @@ const PostDetai: React.FC<PostDetail> = ({
           trigger={"click"}
           placement="topLeft"
         >
-          <span>
+          <span className="reaction-item">
             <img src={likeIcon} alt="" />
+            <span>Thích</span>
           </span>
         </Popover>
+        <span className="reaction-item">
+          <img src={commentIcon} alt="comment" />
+          <span>Bình luận</span>
+        </span>
+        <span className="reaction-item">
+          <img src={shareIcon} alt="share" />
+          <span>Chia sẻ</span>
+        </span>
       </div>
+
+      <div className="line" />
+
+      <CommentPost />
     </PostDetailWrapper>
   );
 };

@@ -78,4 +78,27 @@ export const GlobalStyle = createGlobalStyle`
     }
   }
   
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #fff;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #9a9a9ad9;
+    border-radius: 5px;
+  }
+
+  /* :hover ::-webkit-scrollbar-thumb {
+    background: #e4e6eb;
+  } */
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #888;
+  }
 `;

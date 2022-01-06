@@ -12,7 +12,6 @@ import CreatePostModal from "./CreatePostModal";
 import { postSelector } from "src/ducks/home/post/selector";
 import { Post } from "src/ducks/home/post";
 import { LoadingOutlined } from "@ant-design/icons";
-import InfiniteScroll from "react-infinite-scroll-component";
 
 const PostHomeFeed: React.FC = () => {
   const { loggedUser } = useSelector(userSelector);
@@ -24,13 +23,8 @@ const PostHomeFeed: React.FC = () => {
     getPost();
   }, [getPost]);
 
-  const handleScrollTop = (e: any) => {
-    const element = e.target;
-    console.log(element.scrollHeight, element.scrollTop, element.clientHeight);
-  };
-
   return (
-    <PostHomeFeedWrapper onScroll={handleScrollTop}>
+    <PostHomeFeedWrapper>
       <div className="post-create">
         <div className="feeling">
           <span className="avatar">

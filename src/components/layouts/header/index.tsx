@@ -11,6 +11,7 @@ import useAccount from "src/ducks/header/account/hook";
 import { useSelector } from "react-redux";
 import { userSelector } from "src/ducks/user/selector";
 import useUser from "src/ducks/user/hook";
+import AvatarBase from "src/components/base/avatar/Avatar";
 
 const Header: React.FC = () => {
   const { isVisibleSetting, setIsVisibleSetting } = useAccount();
@@ -64,13 +65,7 @@ const Header: React.FC = () => {
               placement="bottomRight"
             >
               <span>
-                <Avatar
-                  src={loggedUser?.profileImage}
-                  size={42}
-                  className="avatar-img"
-                >
-                  {loggedUser?.name.charAt(0).toUpperCase()}
-                </Avatar>
+                <AvatarBase user={loggedUser} size={42} />
                 <DownOutlined />
               </span>
             </Dropdown>

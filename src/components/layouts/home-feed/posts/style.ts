@@ -47,10 +47,10 @@ export const PostHomeFeedWrapper = styled.div`
     }
 
     .upload-content {
-      height: 50px;
+      height: 35px;
       display: flex;
       .upload {
-        font-size: 19px;
+        font-size: 17px;
         color: #969696;
         font-weight: 600;
         display: flex;
@@ -90,14 +90,37 @@ export const PostDetailWrapper = styled.div`
     rgb(0 0 0 / 11%) 0px 0.3px 0.9px 0px;
   margin-bottom: 30px;
   border-radius: 10px;
-  padding: 20px 25px;
+  padding: 20px 25px 10px;
+
+  .line {
+    width: 100%;
+    height: 1px;
+    background-color: #ced0d4;
+    margin: 10px 0;
+  }
 
   .reaction {
-    height: 30px;
-    span {
+    height: 40px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    .reaction-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 120px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 7px;
+      :hover {
+        background-color: #eeeeee;
+      }
+      cursor: pointer;
       img {
         cursor: pointer;
-        height: 30px;
+        height: 60%;
+        margin-right: 5px;
       }
     }
   }
@@ -261,29 +284,6 @@ export const PostModalWrapper = styled(Modal)`
       max-height: 50vh;
       overflow-y: auto;
       padding-right: 14px;
-      ::-webkit-scrollbar {
-        width: 10px;
-      }
-
-      /* Track */
-      ::-webkit-scrollbar-track {
-        background: #fff;
-      }
-
-      /* Handle */
-      ::-webkit-scrollbar-thumb {
-        background: #7c7c7cd9;
-        border-radius: 5px;
-      }
-
-      :hover ::-webkit-scrollbar-thumb {
-        background: #e4e6eb;
-      }
-
-      /* Handle on hover */
-      ::-webkit-scrollbar-thumb:hover {
-        background: #888;
-      }
 
       .ant-mentions {
         border: none !important;
