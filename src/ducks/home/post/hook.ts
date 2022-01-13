@@ -9,14 +9,17 @@ import isUrl from "src/libs/helpers/utils/url";
 import axiosInstance from "src/services";
 import {
   addPostScroll,
+  createComment,
   createPost,
   deletePost,
+  getCommentPost,
   Post,
   setAllPost,
   setPostDetail,
   updatePostById,
 } from ".";
 import { MentionSearch } from "./mentions/hook";
+import { postSelector } from "./selector";
 
 const usePost = () => {
   const [isVisiblePostModal, setIsVisiblePostModal] = useState<boolean>(false);
@@ -28,8 +31,10 @@ const usePost = () => {
   const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const { loggedUser } = useSelector(userSelector);
+  const { comments: commentStore } = useSelector(postSelector);
 
   const dispatch = useDispatch();
+
   const setInitial = () => {
     setContent("");
     setImagePost([]);
@@ -116,6 +121,33 @@ const usePost = () => {
     [dispatch, loggedUser?.id]
   );
 
+  const handleCommentSubmit = useCallback(
+    async ({ id, images, content, mentions, isUpdate, postId }) => {
+      const dataBody = {
+        ownerId: loggedUser?.id,
+        content,
+        mentions: mentions.map((item: MentionSearch) => item.userId),
+        images,
+        postId,
+      };
+      try {
+        if (isUpdate) {
+          // const {
+          //   data: { comment },
+          // } = await axiosInstance.put(`${API_ENDPOINTS.POST}/${id}`, dataBody);
+          // dispatch(updatePostById({ post }));
+        } else {
+          const {
+            data: { comment },
+          } = await axiosInstance.post(API_ENDPOINTS.COMMENT, dataBody);
+          dispatch(createComment({ comment, postId }));
+        }
+        setInitial();
+      } catch (error) {}
+    },
+    [dispatch, loggedUser?.id]
+  );
+
   const getPost = useCallback(async () => {
     setIsLoadingPost(true);
     try {
@@ -191,6 +223,28 @@ const usePost = () => {
     [handleGetPostScroll, page]
   );
 
+  const getComments = useCallback(
+    async (postId) => {
+      setIsLoading(true);
+      setPage(page + 1);
+      try {
+        const offsetNewComment =
+          commentStore.find((item) => item.postId === postId)?.newComment || 0;
+
+        const {
+          data: { comments },
+        } = await axiosInstance.get(
+          `${API_ENDPOINTS.COMMENT}?limit=${PAGINATION.LIMIT}&offset=${
+            PAGINATION.OFFSET * (page - 1) + offsetNewComment
+          }&postId=${postId}`
+        );
+
+        dispatch(getCommentPost({ comments, postId }));
+      } catch (error) {}
+    },
+    [commentStore, dispatch, page]
+  );
+
   return {
     isVisiblePostModal,
     setIsVisiblePostModal,
@@ -215,6 +269,8 @@ const usePost = () => {
     deletePostById,
     showUpdatePost,
     handleScrollTop,
+    handleCommentSubmit,
+    getComments,
   };
 };
 

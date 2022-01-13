@@ -1,7 +1,7 @@
 import React from "react";
 import { HeaderWrapper } from "../style";
 import logo from "src/assets/img/unnamed.png";
-import { Avatar, Badge, Dropdown, Input, Menu } from "antd";
+import { Badge, Dropdown, Input, Menu } from "antd";
 import { DownOutlined, SearchOutlined } from "@ant-design/icons";
 import searchIcon from "src/assets/img/notification.svg";
 import UserSettingIcon from "src/assets/img/user-settings.svg";

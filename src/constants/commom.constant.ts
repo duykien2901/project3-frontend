@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   USER_ACCEPT_MAIL: "/api/v1/user/accept-mail",
   POST: "/api/v1/posts",
   GROUP: "/api/v1/group",
+  COMMENT: "/api/v1/comments",
 };
 
 export const MODE_HIDE: Record<string, any> = {

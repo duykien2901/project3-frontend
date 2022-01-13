@@ -1,10 +1,11 @@
 import { Avatar } from "antd";
+import { MentionSearch } from "src/ducks/home/post/mentions/hook";
 import { User } from "src/ducks/user";
 import { AvatarWrapper } from "./avatar.style";
 
 type Props = {
   size?: number;
-  user?: User | null;
+  user?: User | MentionSearch | null;
 };
 const AvatarBase: React.FC<Props> = ({ size, user }) => {
   return (

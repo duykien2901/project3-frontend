@@ -154,9 +154,7 @@ const CreatePostModal: React.FC<Props> = ({
                 >
                   <Mentions
                     name="content"
-                    maxLength={3000}
                     autoSize={{ minRows: 3, maxRows: 8 }}
-                    loading={loading}
                     placeholder={"Bạn đang nghĩ gì"}
                     value={content}
                     onChange={(text: string) => {
@@ -164,9 +162,12 @@ const CreatePostModal: React.FC<Props> = ({
                       cutStringContent(text);
                       splitUrlContent(text);
                     }}
+                    maxLength={3000}
+                    loading={loading}
                     prefix={["@"]}
                     filterOption={(text: string, props: any) => props}
                     onSearch={handleSearchMentions}
+                    onSelect={(item) => console.log(item)}
                   >
                     {mentionSearch?.map((item: MentionSearch) => {
                       return (

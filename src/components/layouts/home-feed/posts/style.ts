@@ -92,6 +92,15 @@ export const PostDetailWrapper = styled.div`
   border-radius: 10px;
   padding: 20px 25px 10px;
 
+  .readMore {
+    font-size: 16px;
+    padding: 4px 0;
+    font-weight: 600;
+    color: #4a4a4a;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+
   .line {
     width: 100%;
     height: 1px;
@@ -146,7 +155,7 @@ export const PostDetailWrapper = styled.div`
         }
         .time {
           display: flex;
-          justify-content: center;
+          justify-content: flex-start;
           align-items: center;
 
           span {

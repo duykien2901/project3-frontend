@@ -33,6 +33,9 @@ import isUrl from "src/libs/helpers/utils/url";
 import usePost from "src/ducks/home/post/hook";
 import AvatarBase from "src/components/base/avatar/Avatar";
 import CommentPost from "./Comments/CommentPost";
+import CommentDetail from "./Comments/CommentDetail";
+import { useSelector } from "react-redux";
+import { postSelector } from "src/ducks/home/post/selector";
 
 export type PostDetail = {
   loggedUser: User | null;
@@ -48,7 +51,15 @@ const PostDetai: React.FC<PostDetail> = ({
   const [arrow, setArrow] = useState({ l: false, r: false });
   const { owner, images } = postDetail;
   const [linkPreview, setLinkPreview] = useState("");
-  const { deletePostById, showUpdatePost } = usePost();
+  const { getComments, deletePostById, showUpdatePost } = usePost();
+  const { comments } = useSelector(postSelector);
+  const commentDetailPost = comments.find(
+    (item) => item.postId === postDetail.id
+  );
+
+  const commentLength: number = commentDetailPost
+    ? postDetail.totalComment - commentDetailPost.commentsPost.length
+    : postDetail.totalComment;
 
   useEffect(() => {
     postDetail.images.length > 0 && setArrow({ l: false, r: true });
@@ -302,7 +313,15 @@ const PostDetai: React.FC<PostDetail> = ({
 
       <div className="line" />
 
-      <CommentPost />
+      {commentLength > 0 && (
+        <div className="readMore" onClick={() => getComments(postDetail.id)}>
+          Xem {commentLength} bình luận trước
+        </div>
+      )}
+      {commentDetailPost?.commentsPost?.map((item) => {
+        return <CommentDetail comment={item} />;
+      })}
+      <CommentPost postDetail={postDetail} />
     </PostDetailWrapper>
   );
 };

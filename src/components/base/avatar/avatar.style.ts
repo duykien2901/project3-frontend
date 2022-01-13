@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const AvatarWrapper = styled.span`
-  margin-right: 15px;
+  margin-right: 10px;
   border-radius: 50%;
   cursor: pointer;
   .ant-avatar {
