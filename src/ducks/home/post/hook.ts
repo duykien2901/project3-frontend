@@ -9,13 +9,16 @@ import isUrl from "src/libs/helpers/utils/url";
 import axiosInstance from "src/services";
 import {
   addPostScroll,
+  Comment,
   createComment,
   createPost,
+  deleteComment,
   deletePost,
   getCommentPost,
   Post,
   setAllPost,
   setPostDetail,
+  updateCommentById,
   updatePostById,
 } from ".";
 import { MentionSearch } from "./mentions/hook";
@@ -30,6 +33,7 @@ const usePost = () => {
   const [linkPreview, setLinkPreview] = useState<string>("");
   const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
+  const [commentUpdated, setCommentUpdated] = useState<Comment | null>(null);
   const { loggedUser } = useSelector(userSelector);
   const { comments: commentStore } = useSelector(postSelector);
 
@@ -132,10 +136,13 @@ const usePost = () => {
       };
       try {
         if (isUpdate) {
-          // const {
-          //   data: { comment },
-          // } = await axiosInstance.put(`${API_ENDPOINTS.POST}/${id}`, dataBody);
-          // dispatch(updatePostById({ post }));
+          const {
+            data: { comment },
+          } = await axiosInstance.put(
+            `${API_ENDPOINTS.COMMENT}/${id}`,
+            dataBody
+          );
+          dispatch(updateCommentById({ comment, postId }));
         } else {
           const {
             data: { comment },
@@ -245,6 +252,21 @@ const usePost = () => {
     [commentStore, dispatch, page]
   );
 
+  const deleteCommentById = useCallback(
+    async (id, postId) => {
+      try {
+        await axiosInstance.delete(`${API_ENDPOINTS.COMMENT}/${id}`);
+        dispatch(deleteComment({ id, postId }));
+      } catch (error: any) {
+        notification.error({
+          message: error.message,
+          duration: 1,
+        });
+      }
+    },
+    [dispatch]
+  );
+
   return {
     isVisiblePostModal,
     setIsVisiblePostModal,
@@ -271,6 +293,9 @@ const usePost = () => {
     handleScrollTop,
     handleCommentSubmit,
     getComments,
+    commentUpdated,
+    setCommentUpdated,
+    deleteCommentById,
   };
 };
 

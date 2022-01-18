@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { reverse } from "lodash";
+import { remove, reverse } from "lodash";
 import { User } from "src/ducks/user";
 import { MentionSearch } from "./mentions/hook";
 
@@ -15,6 +15,7 @@ export interface Comment {
   updatedAt: Date;
   totalReplies?: number;
   replies?: Reply[];
+  postId: number;
 }
 
 export interface Comments {
@@ -148,6 +149,38 @@ const { reducer, actions } = createSlice({
         ];
       }
     },
+    updateCommentById: (
+      state: InitialState,
+      action: PayloadAction<{ comment: Comment; postId: number }>
+    ) => {
+      const { comment, postId } = action.payload;
+      const indexCommentPost: number = state.comments.findIndex(
+        (item) => item.postId === postId
+      );
+      const indexComment = state.comments[
+        indexCommentPost
+      ].commentsPost.findIndex((item) => item.id === comment.id);
+
+      state.comments[indexCommentPost].commentsPost[indexComment] = comment;
+    },
+    deleteComment: (
+      state: InitialState,
+      action: PayloadAction<{ id: number; postId: number }>
+    ) => {
+      const { id, postId } = action.payload;
+      const indexComment: number = state.comments.findIndex(
+        (item) => item.postId === postId
+      );
+      remove(
+        state.comments[indexComment].commentsPost,
+        (item) => item.id === id
+      );
+      const indexPost: number = state.posts.findIndex(
+        (item) => item.id === postId
+      );
+      state.posts[indexPost].totalComment =
+        state.posts[indexPost].totalComment - 1;
+    },
   },
 });
 
@@ -160,6 +193,8 @@ export const {
   addPostScroll,
   getCommentPost,
   createComment,
+  updateCommentById,
+  deleteComment,
 } = actions;
 
 export default reducer;

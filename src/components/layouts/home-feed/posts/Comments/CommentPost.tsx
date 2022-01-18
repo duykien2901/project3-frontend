@@ -1,24 +1,34 @@
 import { Formik } from "formik";
 import { FormItem } from "formik-antd";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
+import { Dropdown, Mentions, Upload } from "antd";
+
 import AvatarBase from "src/components/base/avatar/Avatar";
 import { userSelector } from "src/ducks/user/selector";
 import { CommemtWrapper } from "./style";
 import uploadIcon from "src/assets/img/upload-image.svg";
 import smileIcon from "src/assets/img/smile.svg";
-import { Dropdown, Mentions, Upload } from "antd";
 import usePost from "src/ducks/home/post/hook";
 import Picker from "emoji-picker-react";
 import useMentions, { MentionSearch } from "src/ducks/home/post/mentions/hook";
 import { postSelector } from "src/ducks/home/post/selector";
-import { Post } from "src/ducks/home/post";
+import { Comment, Post } from "src/ducks/home/post";
+import closeIcon from "src/assets/img/x.svg";
+
 export type CommentProps = {
   postDetail: Post;
+  commentUpdated?: Comment | null;
+  setCommentUpdated?: (commentUpdated: Comment | null) => void;
+  isUpdate?: boolean;
 };
-const CommentPost: React.FC<CommentProps> = ({ postDetail }) => {
+const CommentPost: React.FC<CommentProps> = ({
+  postDetail,
+  commentUpdated,
+  setCommentUpdated = () => {},
+  isUpdate = false,
+}) => {
   const { loggedUser } = useSelector(userSelector);
-  const { commentDetail } = useSelector(postSelector);
 
   const {
     handleChange,
@@ -26,6 +36,7 @@ const CommentPost: React.FC<CommentProps> = ({ postDetail }) => {
     content,
     setContent,
     imagePost,
+    isLoading,
     deleteImagePost,
     splitUrlContent,
     linkPreview,
@@ -45,6 +56,14 @@ const CommentPost: React.FC<CommentProps> = ({ postDetail }) => {
     setMentions,
   } = useMentions();
 
+  useEffect(() => {
+    if (isUpdate && commentUpdated) {
+      setContent(commentUpdated.content);
+      setMentions(commentUpdated.mentions);
+      setImagePost(commentUpdated.images);
+    }
+  }, [commentUpdated, isUpdate, setContent, setImagePost, setMentions]);
+
   const pickerIcon = useMemo(() => {
     return (
       <Picker
@@ -57,6 +76,7 @@ const CommentPost: React.FC<CommentProps> = ({ postDetail }) => {
   }, [content, setContent]);
 
   const handleKeyPress = useCallback((e, submitForm) => {
+    console.log(e.keyCode);
     if (e.key === "Enter" && e.shiftKey) {
       return;
     }
@@ -67,20 +87,21 @@ const CommentPost: React.FC<CommentProps> = ({ postDetail }) => {
   }, []);
 
   return (
-    <CommemtWrapper>
+    <CommemtWrapper style={{ marginBottom: commentUpdated ? "30px" : "" }}>
       <div className="comment-input">
         <AvatarBase user={loggedUser} size={35} />
         <Formik
           initialValues={{ content: "" }}
-          onSubmit={(values) => {
-            handleCommentSubmit({
+          onSubmit={async (values) => {
+            await handleCommentSubmit({
               content,
               images: imagePost,
               mentions,
-              isUpdate: !!commentDetail,
-              id: commentDetail?.id,
+              isUpdate: !!commentUpdated,
+              id: commentUpdated?.id,
               postId: postDetail.id,
             });
+            isUpdate && setCommentUpdated(null);
           }}
         >
           {({ submitForm }) => {
@@ -126,15 +147,17 @@ const CommentPost: React.FC<CommentProps> = ({ postDetail }) => {
                   </Mentions>
                 </FormItem>
                 <div className="upload">
-                  <Upload
-                    accept={".png,.jpg,.jpeg"}
-                    name="avatar"
-                    listType="picture-card"
-                    showUploadList={false}
-                    beforeUpload={beforeUpload}
-                  >
-                    <img src={uploadIcon} alt="upload" />
-                  </Upload>
+                  {!imagePost.length && (
+                    <Upload
+                      accept={".png,.jpg,.jpeg"}
+                      name="avatar"
+                      listType="picture-card"
+                      showUploadList={false}
+                      beforeUpload={beforeUpload}
+                    >
+                      <img src={uploadIcon} alt="upload" />
+                    </Upload>
+                  )}
                   <Dropdown overlay={pickerIcon} trigger={["click"]}>
                     <img src={smileIcon} alt="" />
                   </Dropdown>
@@ -144,6 +167,26 @@ const CommentPost: React.FC<CommentProps> = ({ postDetail }) => {
           }}
         </Formik>
       </div>
+
+      {!!imagePost.length && (
+        <div className="img-preview">
+          <img className="img-item" src={imagePost[0]} alt="" />
+          <span className="close-btn" onClick={() => setImagePost([])}>
+            <img src={closeIcon} alt="" />
+          </span>
+        </div>
+      )}
+
+      {commentUpdated && (
+        <div className="cancel">
+          <span
+            className="cancel-item"
+            onClick={() => isUpdate && setCommentUpdated(null)}
+          >
+            Hủy
+          </span>
+        </div>
+      )}
     </CommemtWrapper>
   );
 };

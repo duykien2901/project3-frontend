@@ -1,11 +1,12 @@
+import React, { useCallback, useEffect, useState } from "react";
+
 import {
   EllipsisOutlined,
   LeftOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import { Carousel, Dropdown, Image, Menu, Popover } from "antd";
+import { Carousel, Dropdown, Image, Menu, Modal, Popover } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Post } from "src/ducks/home/post";
 import { User } from "src/ducks/user";
 import { formatDate } from "src/libs/helpers/utils/formatDate";
@@ -16,12 +17,6 @@ import privateIcon from "src/assets/img/privateMode.svg";
 import editIcon from "src/assets/img/edit.svg";
 import deleteIcon from "src/assets/img/delete.svg";
 import likeIcon from "src/assets/img/like.svg";
-import sadIcon from "src/assets/img/sad.svg";
-import likeNewIcon from "src/assets/img/like-new.svg";
-import hahaIcon from "src/assets/img/haha.svg";
-import argryIcon from "src/assets/img/angry.svg";
-import careIcon from "src/assets/img/care.svg";
-import loveIcon from "src/assets/img/love.svg";
 import commentIcon from "src/assets/img/comment.svg";
 import shareIcon from "src/assets/img/share.svg";
 
@@ -36,6 +31,7 @@ import CommentPost from "./Comments/CommentPost";
 import CommentDetail from "./Comments/CommentDetail";
 import { useSelector } from "react-redux";
 import { postSelector } from "src/ducks/home/post/selector";
+import Reaction from "./Reaction";
 
 export type PostDetail = {
   loggedUser: User | null;
@@ -51,7 +47,13 @@ const PostDetai: React.FC<PostDetail> = ({
   const [arrow, setArrow] = useState({ l: false, r: false });
   const { owner, images } = postDetail;
   const [linkPreview, setLinkPreview] = useState("");
-  const { getComments, deletePostById, showUpdatePost } = usePost();
+  const {
+    getComments,
+    deletePostById,
+    showUpdatePost,
+    commentUpdated,
+    setCommentUpdated,
+  } = usePost();
   const { comments } = useSelector(postSelector);
   const commentDetailPost = comments.find(
     (item) => item.postId === postDetail.id
@@ -86,7 +88,12 @@ const PostDetai: React.FC<PostDetail> = ({
             key={"edit"}
             icon={<img src={deleteIcon} alt="delete" className="header-menu" />}
             className="user-setting"
-            onClick={() => deletePostById(item.id)}
+            onClick={() => {
+              Modal.confirm({
+                content: "Bạn có chắc chắn muốn xóa",
+                onOk: () => deletePostById(item.id),
+              });
+            }}
           >
             Xóa bài viết
           </Menu.Item>
@@ -211,31 +218,6 @@ const PostDetai: React.FC<PostDetail> = ({
     });
   };
 
-  const renderReaction = useMemo(() => {
-    return (
-      <div className="react-container">
-        <span>
-          <img src={likeNewIcon} alt="" />
-        </span>
-        <span>
-          <img src={sadIcon} alt="" />
-        </span>
-        <span>
-          <img src={argryIcon} alt="" />
-        </span>
-        <span>
-          <img src={loveIcon} alt="" />
-        </span>
-        <span>
-          <img src={hahaIcon} alt="" />
-        </span>
-        <span>
-          <img src={careIcon} alt="" />
-        </span>
-      </div>
-    );
-  }, []);
-
   return (
     <PostDetailWrapper key={postDetail.id}>
       <div className="title">
@@ -291,7 +273,7 @@ const PostDetai: React.FC<PostDetail> = ({
       <div className="line" />
       <div className="reaction">
         <Popover
-          content={renderReaction}
+          content={<Reaction />}
           title={null}
           trigger={"click"}
           placement="topLeft"
@@ -318,9 +300,20 @@ const PostDetai: React.FC<PostDetail> = ({
           Xem {commentLength} bình luận trước
         </div>
       )}
+
       {commentDetailPost?.commentsPost?.map((item) => {
-        return <CommentDetail comment={item} />;
+        return commentUpdated?.id !== item.id ? (
+          <CommentDetail comment={item} setCommentUpdated={setCommentUpdated} />
+        ) : (
+          <CommentPost
+            postDetail={postDetail}
+            commentUpdated={commentUpdated}
+            setCommentUpdated={setCommentUpdated}
+            isUpdate={true}
+          />
+        );
       })}
+
       <CommentPost postDetail={postDetail} />
     </PostDetailWrapper>
   );
