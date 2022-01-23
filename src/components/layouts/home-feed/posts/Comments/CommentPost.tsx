@@ -12,21 +12,28 @@ import smileIcon from "src/assets/img/smile.svg";
 import usePost from "src/ducks/home/post/hook";
 import Picker from "emoji-picker-react";
 import useMentions, { MentionSearch } from "src/ducks/home/post/mentions/hook";
-import { postSelector } from "src/ducks/home/post/selector";
-import { Comment, Post } from "src/ducks/home/post";
+import { Comment, Post, Reply } from "src/ducks/home/post";
 import closeIcon from "src/assets/img/x.svg";
 
 export type CommentProps = {
-  postDetail: Post;
+  postId?: number;
   commentUpdated?: Comment | null;
   setCommentUpdated?: (commentUpdated: Comment | null) => void;
-  isUpdate?: boolean;
+  reply?: boolean;
+  commentId?: number;
+  replyUpdated?: Reply | null;
+  setReplyUpdated?: any;
+  mentionsReply?: MentionSearch;
 };
 const CommentPost: React.FC<CommentProps> = ({
-  postDetail,
+  postId,
   commentUpdated,
   setCommentUpdated = () => {},
-  isUpdate = false,
+  setReplyUpdated = () => {},
+  commentId,
+  reply,
+  replyUpdated,
+  mentionsReply,
 }) => {
   const { loggedUser } = useSelector(userSelector);
 
@@ -36,14 +43,10 @@ const CommentPost: React.FC<CommentProps> = ({
     content,
     setContent,
     imagePost,
-    isLoading,
-    deleteImagePost,
     splitUrlContent,
-    linkPreview,
-    handelSubmit,
     setImagePost,
-    setInitial,
     handleCommentSubmit,
+    handleCreateReply,
   } = usePost();
 
   const {
@@ -56,13 +59,20 @@ const CommentPost: React.FC<CommentProps> = ({
     setMentions,
   } = useMentions();
 
+  const setInitData = useCallback(
+    (value: any) => {
+      setContent(value.content);
+      setMentions(value.mentions);
+      setImagePost(value.images);
+    },
+    [setContent, setImagePost, setMentions]
+  );
+
   useEffect(() => {
-    if (isUpdate && commentUpdated) {
-      setContent(commentUpdated.content);
-      setMentions(commentUpdated.mentions);
-      setImagePost(commentUpdated.images);
-    }
-  }, [commentUpdated, isUpdate, setContent, setImagePost, setMentions]);
+    commentUpdated && setInitData(commentUpdated);
+
+    replyUpdated && setInitData(replyUpdated);
+  }, [commentUpdated, replyUpdated, setInitData]);
 
   const pickerIcon = useMemo(() => {
     return (
@@ -76,7 +86,6 @@ const CommentPost: React.FC<CommentProps> = ({
   }, [content, setContent]);
 
   const handleKeyPress = useCallback((e, submitForm) => {
-    console.log(e.keyCode);
     if (e.key === "Enter" && e.shiftKey) {
       return;
     }
@@ -89,19 +98,32 @@ const CommentPost: React.FC<CommentProps> = ({
   return (
     <CommemtWrapper style={{ marginBottom: commentUpdated ? "30px" : "" }}>
       <div className="comment-input">
-        <AvatarBase user={loggedUser} size={35} />
+        <AvatarBase user={loggedUser} size={reply ? 30 : 35} />
         <Formik
           initialValues={{ content: "" }}
           onSubmit={async (values) => {
-            await handleCommentSubmit({
-              content,
-              images: imagePost,
-              mentions,
-              isUpdate: !!commentUpdated,
-              id: commentUpdated?.id,
-              postId: postDetail.id,
-            });
-            isUpdate && setCommentUpdated(null);
+            if (reply) {
+              await handleCreateReply({
+                id: replyUpdated?.id,
+                content,
+                images: imagePost,
+                mentions,
+                isUpdate: !!replyUpdated,
+                postId,
+                commentId,
+              });
+              replyUpdated && setReplyUpdated(null);
+            } else {
+              await handleCommentSubmit({
+                content,
+                images: imagePost,
+                mentions,
+                isUpdate: !!commentUpdated,
+                id: commentUpdated?.id,
+                postId,
+              });
+              commentUpdated && setCommentUpdated(null);
+            }
           }}
         >
           {({ submitForm }) => {
@@ -177,11 +199,14 @@ const CommentPost: React.FC<CommentProps> = ({
         </div>
       )}
 
-      {commentUpdated && (
+      {(commentUpdated || replyUpdated) && (
         <div className="cancel">
           <span
             className="cancel-item"
-            onClick={() => isUpdate && setCommentUpdated(null)}
+            onClick={() => {
+              commentUpdated && setCommentUpdated(null);
+              replyUpdated && setReplyUpdated(null);
+            }}
           >
             Hủy
           </span>

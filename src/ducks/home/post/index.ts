@@ -13,15 +13,33 @@ export interface Comment {
   mentions: MentionSearch[];
   createdAt: Date;
   updatedAt: Date;
-  totalReplies?: number;
+  totalReplies: number;
   replies?: Reply[];
   postId: number;
+}
+
+export interface Reply {
+  id: number;
+  content: string;
+  owner: User;
+  images: string[];
+  mentions: MentionSearch[];
+  createdAt: Date;
+  updatedAt: Date;
+  postId: number;
+  commentId: number;
 }
 
 export interface Comments {
   postId: number;
   commentsPost: Comment[];
   newComment: number;
+}
+
+export interface RepliesComment {
+  commentId: number;
+  replies: Reply[];
+  newReplies: number;
 }
 export interface Post {
   id: number;
@@ -44,6 +62,7 @@ type InitialState = {
   commentDetail: Comment | null;
   comments: Comments[];
   isShowPostPopup: boolean;
+  repliesComment: RepliesComment[];
 };
 
 const initialState: InitialState = {
@@ -53,6 +72,7 @@ const initialState: InitialState = {
   totalPost: 0,
   comments: [],
   isShowPostPopup: false,
+  repliesComment: [],
 };
 
 const { reducer, actions } = createSlice({
@@ -112,13 +132,13 @@ const { reducer, actions } = createSlice({
       action: PayloadAction<{ comments: Comment[]; postId: number }>
     ) => {
       const { comments, postId } = action.payload;
-      const indexComment = state.comments.findIndex(
+      const indexReply = state.comments.findIndex(
         (item) => item.postId === postId
       );
-      if (indexComment > -1) {
-        state.comments[indexComment].commentsPost = [
+      if (indexReply > -1) {
+        state.comments[indexReply].commentsPost = [
           ...comments,
-          ...state.comments[indexComment].commentsPost,
+          ...state.comments[indexReply].commentsPost,
         ];
       } else {
         state.comments = [
@@ -132,16 +152,16 @@ const { reducer, actions } = createSlice({
       action: PayloadAction<{ comment: Comment; postId: number }>
     ) => {
       const { comment, postId } = action.payload;
-      const indexComment = state.comments.findIndex(
+      const indexReply = state.comments.findIndex(
         (item) => item.postId === postId
       );
-      if (indexComment > -1) {
-        state.comments[indexComment].commentsPost = [
-          ...state.comments[indexComment].commentsPost,
+      if (indexReply > -1) {
+        state.comments[indexReply].commentsPost = [
+          ...state.comments[indexReply].commentsPost,
           comment,
         ];
-        state.comments[indexComment].newComment =
-          state.comments[indexComment].newComment + 1;
+        state.comments[indexReply].newComment =
+          state.comments[indexReply].newComment + 1;
       } else {
         state.comments = [
           ...state.comments,
@@ -154,32 +174,111 @@ const { reducer, actions } = createSlice({
       action: PayloadAction<{ comment: Comment; postId: number }>
     ) => {
       const { comment, postId } = action.payload;
-      const indexCommentPost: number = state.comments.findIndex(
+      const indexReplyPost: number = state.comments.findIndex(
         (item) => item.postId === postId
       );
-      const indexComment = state.comments[
-        indexCommentPost
-      ].commentsPost.findIndex((item) => item.id === comment.id);
+      const indexReply = state.comments[indexReplyPost].commentsPost.findIndex(
+        (item) => item.id === comment.id
+      );
 
-      state.comments[indexCommentPost].commentsPost[indexComment] = comment;
+      state.comments[indexReplyPost].commentsPost[indexReply] = comment;
     },
     deleteComment: (
       state: InitialState,
       action: PayloadAction<{ id: number; postId: number }>
     ) => {
       const { id, postId } = action.payload;
-      const indexComment: number = state.comments.findIndex(
+      const indexReply: number = state.comments.findIndex(
         (item) => item.postId === postId
       );
-      remove(
-        state.comments[indexComment].commentsPost,
-        (item) => item.id === id
-      );
+      remove(state.comments[indexReply].commentsPost, (item) => item.id === id);
       const indexPost: number = state.posts.findIndex(
         (item) => item.id === postId
       );
       state.posts[indexPost].totalComment =
         state.posts[indexPost].totalComment - 1;
+    },
+    createReply: (
+      state: InitialState,
+      action: PayloadAction<{ reply: Reply; commentId: number }>
+    ) => {
+      const { reply, commentId } = action.payload;
+      const indexReply = state.repliesComment.findIndex(
+        (item) => item.commentId === commentId
+      );
+      if (indexReply > -1) {
+        state.repliesComment[indexReply].replies = [
+          ...state.repliesComment[indexReply].replies,
+          reply,
+        ];
+        state.repliesComment[indexReply].newReplies =
+          state.repliesComment[indexReply].newReplies + 1;
+      } else {
+        state.repliesComment = [
+          ...state.repliesComment,
+          { replies: [reply], commentId, newReplies: 1 },
+        ];
+      }
+    },
+    getRepliesComment: (
+      state: InitialState,
+      action: PayloadAction<{ replies: Reply[]; commentId: number }>
+    ) => {
+      const { replies, commentId } = action.payload;
+      const indexReply = state.repliesComment.findIndex(
+        (item) => item.commentId === commentId
+      );
+      if (indexReply > -1) {
+        state.repliesComment[indexReply].replies = [
+          ...replies,
+          ...state.repliesComment[indexReply].replies,
+        ];
+      } else {
+        state.repliesComment = [
+          ...state.repliesComment,
+          { replies: replies, commentId, newReplies: 0 },
+        ];
+      }
+    },
+    updateReplyById: (
+      state: InitialState,
+      action: PayloadAction<{ reply: Reply; commentId: number }>
+    ) => {
+      const { reply, commentId } = action.payload;
+      const indexCommentPost: number = state.repliesComment.findIndex(
+        (item) => item.commentId === commentId
+      );
+      const indexReply = state.repliesComment[
+        indexCommentPost
+      ].replies.findIndex((item) => item.id === reply.id);
+
+      state.repliesComment[indexCommentPost].replies[indexReply] = reply;
+    },
+    deleteReply: (
+      state: InitialState,
+      action: PayloadAction<{ id: number; commentId: number; postId: number }>
+    ) => {
+      const { id, commentId, postId } = action.payload;
+      const indexReply: number = state.repliesComment.findIndex(
+        (item) => item.commentId === commentId
+      );
+      remove(
+        state.repliesComment[indexReply].replies,
+        (item) => item.id === id
+      );
+
+      const indexComment = state.comments.findIndex(
+        (item) => item.postId === postId
+      );
+      const indexReplyInComment = state.comments[
+        indexComment
+      ].commentsPost.findIndex((item) => item.id === commentId);
+
+      state.comments[indexComment].commentsPost[
+        indexReplyInComment
+      ].totalReplies =
+        state.comments[indexComment].commentsPost[indexReplyInComment]
+          .totalReplies - 1;
     },
   },
 });
@@ -195,6 +294,10 @@ export const {
   createComment,
   updateCommentById,
   deleteComment,
+  createReply,
+  getRepliesComment,
+  updateReplyById,
+  deleteReply,
 } = actions;
 
 export default reducer;

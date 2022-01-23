@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 
 import {
   EllipsisOutlined,
@@ -53,6 +53,8 @@ const PostDetai: React.FC<PostDetail> = ({
     showUpdatePost,
     commentUpdated,
     setCommentUpdated,
+    visibleComment,
+    setVisibleComment,
   } = usePost();
   const { comments } = useSelector(postSelector);
   const commentDetailPost = comments.find(
@@ -283,7 +285,7 @@ const PostDetai: React.FC<PostDetail> = ({
             <span>Thích</span>
           </span>
         </Popover>
-        <span className="reaction-item">
+        <span className="reaction-item" onClick={() => setVisibleComment(true)}>
           <img src={commentIcon} alt="comment" />
           <span>Bình luận</span>
         </span>
@@ -293,28 +295,38 @@ const PostDetai: React.FC<PostDetail> = ({
         </span>
       </div>
 
-      <div className="line" />
+      {visibleComment && (
+        <Fragment>
+          <div className="line" />
 
-      {commentLength > 0 && (
-        <div className="readMore" onClick={() => getComments(postDetail.id)}>
-          Xem {commentLength} bình luận trước
-        </div>
+          {commentLength > 0 && (
+            <div
+              className="readMore"
+              onClick={() => getComments(postDetail.id)}
+            >
+              Xem {commentLength} bình luận trước
+            </div>
+          )}
+
+          {commentDetailPost?.commentsPost?.map((item) => {
+            return commentUpdated?.id !== item.id ? (
+              <CommentDetail
+                comment={item}
+                setCommentUpdated={setCommentUpdated}
+                postId={postDetail.id}
+              />
+            ) : (
+              <CommentPost
+                postId={postDetail.id}
+                commentUpdated={commentUpdated}
+                setCommentUpdated={setCommentUpdated}
+              />
+            );
+          })}
+
+          <CommentPost postId={postDetail.id} />
+        </Fragment>
       )}
-
-      {commentDetailPost?.commentsPost?.map((item) => {
-        return commentUpdated?.id !== item.id ? (
-          <CommentDetail comment={item} setCommentUpdated={setCommentUpdated} />
-        ) : (
-          <CommentPost
-            postDetail={postDetail}
-            commentUpdated={commentUpdated}
-            setCommentUpdated={setCommentUpdated}
-            isUpdate={true}
-          />
-        );
-      })}
-
-      <CommentPost postDetail={postDetail} />
     </PostDetailWrapper>
   );
 };

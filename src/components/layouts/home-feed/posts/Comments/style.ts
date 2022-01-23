@@ -106,6 +106,10 @@ export const CommentDetailWrapper = styled.div`
   display: flex;
   align-items: flex-start;
 
+  .content-wrapper {
+    width: 100%;
+  }
+
   .content-comment {
     font-size: 16px;
     white-space: pre-line;
@@ -180,5 +184,15 @@ export const CommentDetailWrapper = styled.div`
 
   :hover .edit-btn {
     display: block;
+  }
+  .more-reply {
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #5d5d5d;
+    margin: 10px 0;
+    .img-reply {
+      transform: rotate(180deg);
+    }
   }
 `;

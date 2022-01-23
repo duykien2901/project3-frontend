@@ -12,14 +12,19 @@ import {
   Comment,
   createComment,
   createPost,
+  createReply,
   deleteComment,
   deletePost,
+  deleteReply,
   getCommentPost,
+  getRepliesComment,
   Post,
+  Reply,
   setAllPost,
   setPostDetail,
   updateCommentById,
   updatePostById,
+  updateReplyById,
 } from ".";
 import { MentionSearch } from "./mentions/hook";
 import { postSelector } from "./selector";
@@ -34,8 +39,10 @@ const usePost = () => {
   const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [commentUpdated, setCommentUpdated] = useState<Comment | null>(null);
+  const [visibleComment, setVisibleComment] = useState(false);
   const { loggedUser } = useSelector(userSelector);
-  const { comments: commentStore } = useSelector(postSelector);
+  const { comments: commentStore, repliesComment: repliesStore } =
+    useSelector(postSelector);
 
   const dispatch = useDispatch();
 
@@ -267,6 +274,77 @@ const usePost = () => {
     [dispatch]
   );
 
+  const handleCreateReply = useCallback(
+    async ({ id, images, content, mentions, isUpdate, postId, commentId }) => {
+      const dataBody = {
+        ownerId: loggedUser?.id,
+        content,
+        mentions: mentions.map((item: MentionSearch) => item.userId),
+        images,
+        postId,
+        commentId,
+      };
+      if (isUpdate) {
+        const {
+          data: { reply },
+        } = await axiosInstance.put(`${API_ENDPOINTS.REPLY}/${id}`, dataBody);
+        dispatch(updateReplyById({ reply, commentId }));
+      } else {
+        try {
+          const {
+            data: { reply },
+          } = await axiosInstance.post(API_ENDPOINTS.REPLY, dataBody);
+          dispatch(createReply({ reply, commentId }));
+        } catch (error: any) {
+          notification.error({
+            message: error.response.message || error.message,
+          });
+        }
+      }
+      setInitial();
+    },
+    [dispatch, loggedUser?.id]
+  );
+
+  const getAllReplies = useCallback(
+    async (commentId) => {
+      console.log(commentId);
+      setIsLoading(true);
+      setPage(page + 1);
+      try {
+        const offsetNewReply =
+          repliesStore.find((item) => item.commentId === commentId)
+            ?.newReplies || 0;
+
+        const {
+          data: { replies },
+        } = await axiosInstance.get(
+          `${API_ENDPOINTS.REPLY}?limit=${PAGINATION.LIMIT}&offset=${
+            PAGINATION.OFFSET * (page - 1) + offsetNewReply
+          }&commentId=${commentId}`
+        );
+
+        dispatch(getRepliesComment({ replies, commentId }));
+      } catch (error) {}
+    },
+    [dispatch, page, repliesStore]
+  );
+
+  const deleteReplyById = useCallback(
+    async (id, commentId, postId) => {
+      try {
+        await axiosInstance.delete(`${API_ENDPOINTS.REPLY}/${id}`);
+        dispatch(deleteReply({ id, commentId, postId }));
+      } catch (error: any) {
+        notification.error({
+          message: error.message,
+          duration: 1,
+        });
+      }
+    },
+    [dispatch]
+  );
+
   return {
     isVisiblePostModal,
     setIsVisiblePostModal,
@@ -296,6 +374,11 @@ const usePost = () => {
     commentUpdated,
     setCommentUpdated,
     deleteCommentById,
+    visibleComment,
+    setVisibleComment,
+    handleCreateReply,
+    getAllReplies,
+    deleteReplyById,
   };
 };
 
