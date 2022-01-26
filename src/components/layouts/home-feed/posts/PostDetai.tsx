@@ -1,4 +1,10 @@
-import React, { Fragment, useCallback, useEffect, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import {
   EllipsisOutlined,
@@ -31,7 +37,7 @@ import CommentPost from "./Comments/CommentPost";
 import CommentDetail from "./Comments/CommentDetail";
 import { useSelector } from "react-redux";
 import { postSelector } from "src/ducks/home/post/selector";
-import Reaction from "./Reaction";
+import { REACTION_POST } from "src/constants/post.constant";
 
 export type PostDetail = {
   loggedUser: User | null;
@@ -55,6 +61,9 @@ const PostDetai: React.FC<PostDetail> = ({
     setCommentUpdated,
     visibleComment,
     setVisibleComment,
+    // reaction,
+    // setReaction,
+    handleCreateReaction,
   } = usePost();
   const { comments } = useSelector(postSelector);
   const commentDetailPost = comments.find(
@@ -62,8 +71,14 @@ const PostDetai: React.FC<PostDetail> = ({
   );
 
   const commentLength: number = commentDetailPost
-    ? postDetail.totalComment - commentDetailPost.commentsPost.length
+    ? postDetail.totalComment +
+      commentDetailPost.newComment -
+      commentDetailPost.commentsPost.length
     : postDetail.totalComment;
+
+  const reactionPostKeys = Object.keys(REACTION_POST).find(
+    (item) => REACTION_POST[item].value === postDetail?.reactions[0]?.vote
+  );
 
   useEffect(() => {
     postDetail.images.length > 0 && setArrow({ l: false, r: true });
@@ -172,7 +187,11 @@ const PostDetai: React.FC<PostDetail> = ({
           (item) => item.userId !== mention.userId
         );
         return (
-          <Popover content={inforMention(mention)} title={null}>
+          <Popover
+            content={inforMention(mention)}
+            title={null}
+            key={item + Math.random()}
+          >
             <Link to={"#"} key={item + Math.random()}>
               {item}{" "}
             </Link>
@@ -219,6 +238,30 @@ const PostDetai: React.FC<PostDetail> = ({
       return item === " " ? <>&nbsp;</> : item + " ";
     });
   };
+
+  const renderReaction = useMemo(() => {
+    return (
+      <div className="react-container">
+        {Object.keys(REACTION_POST).map((item: any) => {
+          const { text, icon } = REACTION_POST[item];
+          return (
+            <span
+              key={text}
+              onClick={() =>
+                handleCreateReaction({
+                  vote: REACTION_POST[item].value,
+                  postId: postDetail.id,
+                  userId: loggedUser?.id,
+                })
+              }
+            >
+              <img src={icon} alt="" />
+            </span>
+          );
+        })}
+      </div>
+    );
+  }, [handleCreateReaction, loggedUser, postDetail]);
 
   return (
     <PostDetailWrapper key={postDetail.id}>
@@ -275,15 +318,42 @@ const PostDetai: React.FC<PostDetail> = ({
       <div className="line" />
       <div className="reaction">
         <Popover
-          content={<Reaction />}
+          content={renderReaction}
           title={null}
-          trigger={"click"}
+          trigger={"hover"}
           placement="topLeft"
         >
-          <span className="reaction-item">
-            <img src={likeIcon} alt="" />
-            <span>Thích</span>
-          </span>
+          {reactionPostKeys ? (
+            <span
+              className="reaction-item"
+              onClick={() =>
+                handleCreateReaction({
+                  vote: 0,
+                  postId: postDetail.id,
+                  userId: loggedUser?.id,
+                })
+              }
+            >
+              <img src={REACTION_POST[reactionPostKeys].icon} alt="" />
+              <span style={{ color: REACTION_POST[reactionPostKeys].color }}>
+                {REACTION_POST[reactionPostKeys].text}
+              </span>
+            </span>
+          ) : (
+            <span
+              className="reaction-item"
+              onClick={() =>
+                handleCreateReaction({
+                  vote: REACTION_POST.LIKE.value,
+                  postId: postDetail.id,
+                  userId: loggedUser?.id,
+                })
+              }
+            >
+              <img src={likeIcon} alt="" />
+              <span>Thích</span>
+            </span>
+          )}
         </Popover>
         <span className="reaction-item" onClick={() => setVisibleComment(true)}>
           <img src={commentIcon} alt="comment" />
@@ -314,6 +384,7 @@ const PostDetai: React.FC<PostDetail> = ({
                 comment={item}
                 setCommentUpdated={setCommentUpdated}
                 postId={postDetail.id}
+                key={item.id}
               />
             ) : (
               <CommentPost

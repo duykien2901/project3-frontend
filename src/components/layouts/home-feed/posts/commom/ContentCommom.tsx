@@ -42,7 +42,11 @@ const ContentCommom: React.FC<{ content: string; item: any }> = ({
         (item) => item.userId !== mention.userId
       );
       return (
-        <Popover content={inforMention(mention)} title={null}>
+        <Popover
+          content={inforMention(mention)}
+          title={null}
+          key={item + Math.random()}
+        >
           <Link to={"#"} key={item + Math.random()}>
             {item}{" "}
           </Link>

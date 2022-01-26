@@ -1,5 +1,5 @@
 import { Dropdown, Image, Menu, Modal, Popover } from "antd";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import AvatarBase from "src/components/base/avatar/Avatar";
@@ -8,20 +8,26 @@ import { userSelector } from "src/ducks/user/selector";
 import ContentCommom from "../commom/ContentCommom";
 import editIcon from "src/assets/img/edit.svg";
 import deleteIcon from "src/assets/img/delete.svg";
-import Reaction from "../Reaction";
 import { EllipsisOutlined } from "@ant-design/icons";
 import usePost from "src/ducks/home/post/hook";
 import { ReplyDetailWrapper } from "./replies.style";
+import { REACTION_POST } from "src/constants/post.constant";
 
 type Props = {
   reply: Reply;
   setReplyUpdated: any;
   replyUpdated: Reply | null;
+  setMentionsReply: any;
 };
 
-const RepliesComment: React.FC<Props> = ({ reply, setReplyUpdated }) => {
+const RepliesComment: React.FC<Props> = ({
+  reply,
+  setReplyUpdated,
+  setMentionsReply,
+}) => {
   const { loggedUser } = useSelector(userSelector);
   const { deleteReplyById } = usePost();
+  const { userId, profileImage, name } = reply.owner;
 
   const menu = useCallback(
     (reply: Reply) => {
@@ -59,6 +65,21 @@ const RepliesComment: React.FC<Props> = ({ reply, setReplyUpdated }) => {
     [deleteReplyById, setReplyUpdated]
   );
 
+  const renderReaction = useMemo(() => {
+    return (
+      <div className="react-container">
+        {Object.keys(REACTION_POST).map((item: any) => {
+          const { text, icon } = REACTION_POST[item];
+          return (
+            <span key={text}>
+              <img src={icon} alt="" />
+            </span>
+          );
+        })}
+      </div>
+    );
+  }, []);
+
   return (
     <ReplyDetailWrapper className="replies">
       <AvatarBase user={reply.owner} size={30} />
@@ -91,16 +112,27 @@ const RepliesComment: React.FC<Props> = ({ reply, setReplyUpdated }) => {
         )}
         <div className="reaction-comments">
           <Popover
-            content={<Reaction />}
+            content={renderReaction}
             title={null}
-            trigger={"click"}
+            trigger={"hover"}
             placement="topLeft"
           >
             <span>
               <span className="reaction-item">Thích</span>
-              <span className="reaction-item">Phản hồi</span>
             </span>
           </Popover>
+          <span
+            className="reaction-item"
+            onClick={() =>
+              setMentionsReply({
+                userId,
+                name,
+                profileImage,
+              })
+            }
+          >
+            Phản hồi
+          </span>
         </div>
       </div>
     </ReplyDetailWrapper>

@@ -12,14 +12,14 @@ import smileIcon from "src/assets/img/smile.svg";
 import usePost from "src/ducks/home/post/hook";
 import Picker from "emoji-picker-react";
 import useMentions, { MentionSearch } from "src/ducks/home/post/mentions/hook";
-import { Comment, Post, Reply } from "src/ducks/home/post";
+import { Comment, Reply } from "src/ducks/home/post";
 import closeIcon from "src/assets/img/x.svg";
 
 export type CommentProps = {
   postId?: number;
   commentUpdated?: Comment | null;
   setCommentUpdated?: (commentUpdated: Comment | null) => void;
-  reply?: boolean;
+  isReply?: boolean;
   commentId?: number;
   replyUpdated?: Reply | null;
   setReplyUpdated?: any;
@@ -31,7 +31,7 @@ const CommentPost: React.FC<CommentProps> = ({
   setCommentUpdated = () => {},
   setReplyUpdated = () => {},
   commentId,
-  reply,
+  isReply,
   replyUpdated,
   mentionsReply,
 }) => {
@@ -74,6 +74,13 @@ const CommentPost: React.FC<CommentProps> = ({
     replyUpdated && setInitData(replyUpdated);
   }, [commentUpdated, replyUpdated, setInitData]);
 
+  useEffect(() => {
+    if (mentionsReply) {
+      setContent(`@${mentionsReply.name.replace(/\s/g, "")}`);
+      setMentions([mentionsReply]);
+    }
+  }, [mentionsReply, setContent, setMentions]);
+
   const pickerIcon = useMemo(() => {
     return (
       <Picker
@@ -85,24 +92,27 @@ const CommentPost: React.FC<CommentProps> = ({
     );
   }, [content, setContent]);
 
-  const handleKeyPress = useCallback((e, submitForm) => {
-    if (e.key === "Enter" && e.shiftKey) {
-      return;
-    }
-    if (e.key === "Enter") {
-      e.preventDefault();
-      submitForm();
-    }
-  }, []);
+  const handleKeyPress = useCallback(
+    (e, submitForm) => {
+      if (e.key === "Enter" && e.shiftKey) {
+        return;
+      }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (content) submitForm();
+      }
+    },
+    [content]
+  );
 
   return (
     <CommemtWrapper style={{ marginBottom: commentUpdated ? "30px" : "" }}>
       <div className="comment-input">
-        <AvatarBase user={loggedUser} size={reply ? 30 : 35} />
+        <AvatarBase user={loggedUser} size={isReply ? 30 : 35} />
         <Formik
           initialValues={{ content: "" }}
           onSubmit={async (values) => {
-            if (reply) {
+            if (isReply) {
               await handleCreateReply({
                 id: replyUpdated?.id,
                 content,

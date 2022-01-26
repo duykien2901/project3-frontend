@@ -7,7 +7,7 @@ const {
 
 export const config = {
   api: {
-    restUrl: REACT_APP_API_REST_URL,
+    restUrl: REACT_APP_API_REST_URL || "http://localhost:3030",
     socketUrl: REACT_APP_API_SOCKET_URL,
     folder: REACT_APP_CLOUDIARY_FOLDER,
   },

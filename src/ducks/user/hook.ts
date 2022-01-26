@@ -13,6 +13,7 @@ import { setUser, signOut } from ".";
 import { API_ENDPOINTS } from "src/constants/commom.constant";
 import { useHistory } from "react-router-dom";
 import axiosInstance from "src/services";
+import { socket } from "src/services/socket";
 
 const useUser = () => {
   const [loading, setLoading] = useState(false);
@@ -68,10 +69,11 @@ const useUser = () => {
   );
 
   const logout = useCallback(() => {
+    socket.emit("logout", loggedUser?.userId);
     removeToken();
     dispatch(signOut());
     history.push("/login");
-  }, [dispatch, history]);
+  }, [dispatch, history, loggedUser?.userId]);
 
   const signup = useCallback(async ({ name, password, email }) => {
     setLoading(true);

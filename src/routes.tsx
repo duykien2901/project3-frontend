@@ -12,6 +12,7 @@ import HomeFeed from "./components/layouts/home-feed";
 import ProfileUser from "./components/layouts/home-feed/posts/ProfileUser/ProfileUser";
 import PostHomeFeed from "./components/layouts/home-feed/posts";
 import ProfileCommunity from "./components/layouts/home-feed/posts/ProfileCommunity/ProfileCommunity";
+import PrivateRoute from "./components/commom/private-route";
 
 const LoginPage = lazy(() => import("src/components/login"));
 const SignUpPage = lazy(() => import("src/components/signup"));
@@ -60,13 +61,13 @@ const Routes = () => {
       <Route exact path="/forgot">
         <ForgotPasswordWrapper />
       </Route>
-      <Route path={["/home", "/"]}>
+      <PrivateRoute path={["/home", "/"]}>
         <Layout>
           <Switch>
             <Route path={["/home", "/"]}>{BaseHomeFeedRoute()}</Route>
           </Switch>
         </Layout>
-      </Route>
+      </PrivateRoute>
     </Switch>
   );
 };

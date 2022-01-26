@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { HeaderWrapper } from "../style";
 import logo from "src/assets/img/unnamed.png";
 import { Badge, Dropdown, Input, Menu } from "antd";
@@ -12,11 +12,26 @@ import { useSelector } from "react-redux";
 import { userSelector } from "src/ducks/user/selector";
 import useUser from "src/ducks/user/hook";
 import AvatarBase from "src/components/base/avatar/Avatar";
+import { io } from "socket.io-client";
+import { config } from "src/config";
+import { socket } from "src/services/socket";
 
 const Header: React.FC = () => {
-  const { isVisibleSetting, setIsVisibleSetting } = useAccount();
+  const { isVisibleSetting, setIsVisibleSetting, listenSocket, removeSocket } =
+    useAccount();
   const { loggedUser } = useSelector(userSelector);
   const { logout } = useUser();
+
+  useEffect(() => {
+    listenSocket();
+    return function () {
+      removeSocket();
+    };
+  }, [listenSocket, removeSocket]);
+
+  const handle = () => {
+    socket.emit("send");
+  };
 
   const menu = (
     <Menu className="header">
@@ -53,7 +68,7 @@ const Header: React.FC = () => {
           />
         </div>
         <div className="header-right">
-          <div className="notification">
+          <div className="notification" onClick={() => handle()}>
             <Badge count={11} showZero overflowCount={9}>
               <img src={searchIcon} alt="search" />
             </Badge>

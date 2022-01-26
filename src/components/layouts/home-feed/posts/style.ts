@@ -118,7 +118,7 @@ export const PostDetailWrapper = styled.div`
       justify-content: center;
       align-items: center;
       height: 100%;
-      width: 120px;
+      width: 30%;
       font-size: 16px;
       font-weight: 600;
       border-radius: 7px;

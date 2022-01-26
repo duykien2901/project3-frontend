@@ -9,6 +9,7 @@ import isUrl from "src/libs/helpers/utils/url";
 import axiosInstance from "src/services";
 import {
   addPostScroll,
+  changeReactionPost,
   Comment,
   createComment,
   createPost,
@@ -325,7 +326,11 @@ const usePost = () => {
         );
 
         dispatch(getRepliesComment({ replies, commentId }));
-      } catch (error) {}
+      } catch (error: any) {
+        notification.error({
+          message: error.response.message || error.message,
+        });
+      }
     },
     [dispatch, page, repliesStore]
   );
@@ -341,6 +346,36 @@ const usePost = () => {
           duration: 1,
         });
       }
+    },
+    [dispatch]
+  );
+
+  const [reaction, setReaction] = useState<{
+    text: string;
+    value: number;
+    key: string;
+  } | null>(null);
+
+  const handleCreateReaction = useCallback(
+    async ({
+      vote,
+      postId = null,
+      commentId = null,
+      replyId = null,
+      userId,
+    }) => {
+      try {
+        const {
+          data: { reaction },
+        } = await axiosInstance.post(API_ENDPOINTS.REACTIONS, {
+          vote,
+          postId,
+          commentId,
+          replyId,
+          userId,
+        });
+        postId && dispatch(changeReactionPost({ postId, vote }));
+      } catch (error) {}
     },
     [dispatch]
   );
@@ -379,6 +414,9 @@ const usePost = () => {
     handleCreateReply,
     getAllReplies,
     deleteReplyById,
+    reaction,
+    setReaction,
+    handleCreateReaction,
   };
 };
 

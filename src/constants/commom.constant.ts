@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
   GROUP: "/api/v1/group",
   COMMENT: "/api/v1/comments",
   REPLY: "/api/v1/replies",
+  REACTIONS: "/api/v1/reactions",
 };
 
 export const MODE_HIDE: Record<string, any> = {

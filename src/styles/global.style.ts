@@ -53,11 +53,10 @@ export const GlobalStyle = createGlobalStyle`
     padding: 12px 10px;
     .react-container {
       height: 30px;
-      width: 260px;
+      width: 300px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      /* position: relative; */
       span {
         width: 40px;
         display: flex;

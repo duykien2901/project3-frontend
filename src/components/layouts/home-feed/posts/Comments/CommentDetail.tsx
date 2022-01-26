@@ -1,12 +1,12 @@
+import React, { Fragment, useCallback, useMemo, useState } from "react";
 import { EllipsisOutlined } from "@ant-design/icons";
 import { Dropdown, Image, Menu, Modal, Popover } from "antd";
-import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+
 import AvatarBase from "src/components/base/avatar/Avatar";
 import { Comment, Reply } from "src/ducks/home/post";
 import { userSelector } from "src/ducks/user/selector";
-import Reaction from "../Reaction";
 import { CommentDetailWrapper } from "./style";
 import editIcon from "src/assets/img/edit.svg";
 import deleteIcon from "src/assets/img/delete.svg";
@@ -17,6 +17,7 @@ import CommentPost from "./CommentPost";
 import { postSelector } from "src/ducks/home/post/selector";
 import RepliesComment from "./RepliesComment";
 import { MentionSearch } from "src/ducks/home/post/mentions/hook";
+import { REACTION_POST } from "src/constants/post.constant";
 
 export type CommentProps = {
   comment: Comment;
@@ -38,8 +39,12 @@ const CommentDetail: React.FC<CommentProps> = ({
     (item) => item.commentId === comment.id
   );
   const replyLength: number = repliesCommentDetail
-    ? comment?.totalReplies - repliesCommentDetail.replies.length
+    ? comment?.totalReplies +
+      repliesCommentDetail.newReplies -
+      repliesCommentDetail.replies.length
     : comment?.totalReplies;
+
+  const { userId, profileImage, name } = comment.owner;
 
   const menu = useCallback(
     (comment: Comment) => {
@@ -76,6 +81,21 @@ const CommentDetail: React.FC<CommentProps> = ({
     [deleteCommentById, setCommentUpdated]
   );
 
+  const renderReaction = useMemo(() => {
+    return (
+      <div className="react-container">
+        {Object.keys(REACTION_POST).map((item: any) => {
+          const { text, icon } = REACTION_POST[item];
+          return (
+            <span key={text}>
+              <img src={icon} alt="" />
+            </span>
+          );
+        })}
+      </div>
+    );
+  }, []);
+
   return (
     <Fragment>
       <CommentDetailWrapper>
@@ -85,7 +105,9 @@ const CommentDetail: React.FC<CommentProps> = ({
             <Link to={"#"} className="link-profile">
               {comment.owner.name}
             </Link>
+
             <ContentCommom content={comment.content} item={comment} />
+
             <div className="edit-btn">
               {comment.owner.id === loggedUser?.id && (
                 <Dropdown
@@ -109,17 +131,29 @@ const CommentDetail: React.FC<CommentProps> = ({
           )}
           <div className="reaction-comments">
             <Popover
-              content={<Reaction />}
+              content={renderReaction}
               title={null}
               trigger={"click"}
               placement="topLeft"
             >
               <span>
                 <span className="reaction-item">Thích</span>
-                <span className="reaction-item">Phản hồi</span>
               </span>
             </Popover>
+            <span
+              className="reaction-item"
+              onClick={() => {
+                setMentionsReply({
+                  userId: userId || "",
+                  name,
+                  profileImage,
+                });
+              }}
+            >
+              Phản hồi
+            </span>
           </div>
+
           {!!replyLength && (
             <div
               onClick={() => getAllReplies(comment.id)}
@@ -139,24 +173,26 @@ const CommentDetail: React.FC<CommentProps> = ({
                 key={reply?.id}
                 replyUpdated={replyUpdated}
                 setReplyUpdated={setReplyUpdated}
+                setMentionsReply={setMentionsReply}
               />
             ) : (
               <CommentPost
                 postId={postId}
-                reply={true}
+                isReply={true}
                 commentId={comment.id}
                 replyUpdated={replyUpdated}
                 setReplyUpdated={setReplyUpdated}
               />
             );
           })}
-
-          <CommentPost
-            postId={postId}
-            reply={true}
-            commentId={comment.id}
-            mentionsReply={mentionsReply}
-          />
+          {(mentionsReply || repliesCommentDetail) && (
+            <CommentPost
+              postId={postId}
+              isReply={true}
+              commentId={comment.id}
+              mentionsReply={mentionsReply}
+            />
+          )}
         </div>
       </CommentDetailWrapper>
     </Fragment>

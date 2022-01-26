@@ -16,6 +16,7 @@ export interface Comment {
   totalReplies: number;
   replies?: Reply[];
   postId: number;
+  reactions: any;
 }
 
 export interface Reply {
@@ -28,6 +29,7 @@ export interface Reply {
   updatedAt: Date;
   postId: number;
   commentId: number;
+  reactions: any;
 }
 
 export interface Comments {
@@ -53,6 +55,7 @@ export interface Post {
   updatedAt: Date;
   ownerId: number;
   totalComment: number;
+  reactions: any;
 }
 
 type InitialState = {
@@ -280,6 +283,18 @@ const { reducer, actions } = createSlice({
         state.comments[indexComment].commentsPost[indexReplyInComment]
           .totalReplies - 1;
     },
+    changeReactionPost: (
+      state: InitialState,
+      action: PayloadAction<{ vote: number; postId: number }>
+    ) => {
+      const { postId, vote } = action.payload;
+      const indexPost = state.posts.findIndex((item) => item.id === postId);
+      state.posts[indexPost].reactions[0] = { vote };
+    },
+    changeReactionComment: (
+      state: InitialState,
+      action: PayloadAction<{ vote: number; commentId: number }>
+    ) => {},
   },
 });
 
@@ -298,6 +313,7 @@ export const {
   getRepliesComment,
   updateReplyById,
   deleteReply,
+  changeReactionPost,
 } = actions;
 
 export default reducer;
