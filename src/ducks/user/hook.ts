@@ -112,6 +112,8 @@ const useUser = () => {
           message: err.response?.data.message,
           duration: 1,
         });
+        removeToken();
+        history.push("/login");
         setLoading(false);
       }
     }

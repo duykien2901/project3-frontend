@@ -9,7 +9,9 @@ import isUrl from "src/libs/helpers/utils/url";
 import axiosInstance from "src/services";
 import {
   addPostScroll,
+  changeReactionComment,
   changeReactionPost,
+  changeReactionReply,
   Comment,
   createComment,
   createPost,
@@ -362,6 +364,8 @@ const usePost = () => {
       postId = null,
       commentId = null,
       replyId = null,
+      postIdComment = null,
+      replyIdComment = null,
       userId,
     }) => {
       try {
@@ -375,7 +379,19 @@ const usePost = () => {
           userId,
         });
         postId && dispatch(changeReactionPost({ postId, vote }));
-      } catch (error) {}
+        commentId &&
+          dispatch(
+            changeReactionComment({ commentId, postId: postIdComment, vote })
+          );
+        replyId &&
+          dispatch(
+            changeReactionReply({ vote, replyId, commentId: replyIdComment })
+          );
+      } catch (error: any) {
+        notification.error({
+          message: error.message,
+        });
+      }
     },
     [dispatch]
   );

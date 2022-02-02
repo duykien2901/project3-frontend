@@ -26,8 +26,11 @@ const RepliesComment: React.FC<Props> = ({
   setMentionsReply,
 }) => {
   const { loggedUser } = useSelector(userSelector);
-  const { deleteReplyById } = usePost();
+  const { deleteReplyById, handleCreateReaction } = usePost();
   const { userId, profileImage, name } = reply.owner;
+  const reactionPostKeys = Object.keys(REACTION_POST).find(
+    (item) => REACTION_POST[item].value === reply?.reactions?.vote
+  );
 
   const menu = useCallback(
     (reply: Reply) => {
@@ -71,14 +74,24 @@ const RepliesComment: React.FC<Props> = ({
         {Object.keys(REACTION_POST).map((item: any) => {
           const { text, icon } = REACTION_POST[item];
           return (
-            <span key={text}>
+            <span
+              key={text}
+              onClick={() =>
+                handleCreateReaction({
+                  vote: REACTION_POST[item].value,
+                  replyId: reply.id,
+                  replyIdComment: reply.commentId,
+                  userId: loggedUser?.id,
+                })
+              }
+            >
               <img src={icon} alt="" />
             </span>
           );
         })}
       </div>
     );
-  }, []);
+  }, [handleCreateReaction, loggedUser?.id, reply]);
 
   return (
     <ReplyDetailWrapper className="replies">
@@ -117,9 +130,37 @@ const RepliesComment: React.FC<Props> = ({
             trigger={"hover"}
             placement="topLeft"
           >
-            <span>
-              <span className="reaction-item">Thích</span>
-            </span>
+            {reactionPostKeys ? (
+              <span
+                className="reaction-item"
+                onClick={() =>
+                  handleCreateReaction({
+                    vote: 0,
+                    replyId: reply.id,
+                    replyIdComment: reply.commentId,
+                    userId: loggedUser?.id,
+                  })
+                }
+              >
+                <span style={{ color: REACTION_POST[reactionPostKeys].color }}>
+                  {REACTION_POST[reactionPostKeys].text}
+                </span>
+              </span>
+            ) : (
+              <span
+                className="reaction-item"
+                onClick={() =>
+                  handleCreateReaction({
+                    vote: REACTION_POST.LIKE.value,
+                    replyId: reply.id,
+                    replyIdComment: reply.commentId,
+                    userId: loggedUser?.id,
+                  })
+                }
+              >
+                <span>Thích</span>
+              </span>
+            )}
           </Popover>
           <span
             className="reaction-item"

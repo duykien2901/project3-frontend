@@ -25,6 +25,8 @@ import deleteIcon from "src/assets/img/delete.svg";
 import likeIcon from "src/assets/img/like.svg";
 import commentIcon from "src/assets/img/comment.svg";
 import shareIcon from "src/assets/img/share.svg";
+import likeNewIcon from "src/assets/img/like-new.svg";
+import loveIcon from "src/assets/img/love.svg";
 
 import { MODE_HIDE } from "src/constants/commom.constant";
 import { LinkPreview } from "@dhaiwat10/react-link-preview";
@@ -77,7 +79,7 @@ const PostDetai: React.FC<PostDetail> = ({
     : postDetail.totalComment;
 
   const reactionPostKeys = Object.keys(REACTION_POST).find(
-    (item) => REACTION_POST[item].value === postDetail?.reactions[0]?.vote
+    (item) => REACTION_POST[item].value === postDetail?.reactions?.vote
   );
 
   useEffect(() => {
@@ -315,6 +317,17 @@ const PostDetai: React.FC<PostDetail> = ({
           <LinkPreview url={linkPreview} width={"100%"} />
         </div>
       )}
+      <div className="total">
+        <div className="total-reactions">
+          <span className="reactions-item">
+            <img src={likeNewIcon} alt="" />
+          </span>
+          <span className="reactions-item">
+            <img src={loveIcon} alt="" />
+          </span>
+          <span className="reactions-length">{postDetail.totalReactions}</span>
+        </div>
+      </div>
       <div className="line" />
       <div className="reaction">
         <Popover

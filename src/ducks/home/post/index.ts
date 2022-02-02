@@ -56,6 +56,7 @@ export interface Post {
   ownerId: number;
   totalComment: number;
   reactions: any;
+  totalReactions: number;
 }
 
 type InitialState = {
@@ -289,12 +290,43 @@ const { reducer, actions } = createSlice({
     ) => {
       const { postId, vote } = action.payload;
       const indexPost = state.posts.findIndex((item) => item.id === postId);
-      state.posts[indexPost].reactions[0] = { vote };
+      state.posts[indexPost].reactions = { vote };
     },
     changeReactionComment: (
       state: InitialState,
-      action: PayloadAction<{ vote: number; commentId: number }>
-    ) => {},
+      action: PayloadAction<{ vote: number; commentId: number; postId: number }>
+    ) => {
+      const { vote, commentId, postId } = action.payload;
+      const indexReplyPost: number = state.comments.findIndex(
+        (item) => item.postId === postId
+      );
+      const indexReply = state.comments[indexReplyPost].commentsPost.findIndex(
+        (item) => item.id === commentId
+      );
+      state.comments[indexReplyPost].commentsPost[indexReply].reactions = {
+        vote,
+      };
+    },
+    changeReactionReply: (
+      state: InitialState,
+      action: PayloadAction<{
+        vote: number;
+        commentId: number;
+        replyId: number;
+      }>
+    ) => {
+      const { replyId, commentId, vote } = action.payload;
+      const indexCommentPost: number = state.repliesComment.findIndex(
+        (item) => item.commentId === commentId
+      );
+      const indexReply = state.repliesComment[
+        indexCommentPost
+      ].replies.findIndex((item) => item.id === replyId);
+
+      state.repliesComment[indexCommentPost].replies[indexReply].reactions = {
+        vote,
+      };
+    },
   },
 });
 
@@ -314,6 +346,8 @@ export const {
   updateReplyById,
   deleteReply,
   changeReactionPost,
+  changeReactionComment,
+  changeReactionReply,
 } = actions;
 
 export default reducer;

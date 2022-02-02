@@ -101,6 +101,27 @@ export const PostDetailWrapper = styled.div`
     margin-bottom: 5px;
   }
 
+  .total {
+    height: 30px;
+    display: flex;
+    align-items: center;
+
+    .total-reactions {
+      display: flex;
+      align-items: center;
+      .reactions-item {
+        margin-right: 2px;
+        img {
+          height: 20px;
+        }
+      }
+      .reactions-length {
+        margin-left: 7px;
+        font-size: 16px;
+      }
+    }
+  }
+
   .line {
     width: 100%;
     height: 1px;
