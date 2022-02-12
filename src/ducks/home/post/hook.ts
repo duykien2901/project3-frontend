@@ -43,7 +43,7 @@ const usePost = () => {
   const [page, setPage] = useState<number>(1);
   const [commentUpdated, setCommentUpdated] = useState<Comment | null>(null);
   const [visibleComment, setVisibleComment] = useState(false);
-  const { loggedUser } = useSelector(userSelector);
+  const { loggedUser, userProfile } = useSelector(userSelector);
   const { comments: commentStore, repliesComment: repliesStore } =
     useSelector(postSelector);
 
@@ -165,23 +165,27 @@ const usePost = () => {
     [dispatch, loggedUser?.id]
   );
 
-  const getPost = useCallback(async () => {
-    setIsLoadingPost(true);
-    try {
-      const { data } = await axiosInstance.get(
-        `${API_ENDPOINTS.POST}?limit=${PAGINATION.LIMIT * page}&offset=${
-          PAGINATION.OFFSET * (page - 1)
-        }`
-      );
-      dispatch(setAllPost({ posts: data.posts, total: data.total }));
-      setIsLoadingPost(false);
-    } catch (error: any) {
-      notification.error({
-        message: error.message,
-      });
-      setIsLoadingPost(false);
-    }
-  }, [dispatch, page]);
+  const getPost = useCallback(
+    async ({ userId } = {}) => {
+      console.log(userId);
+      setIsLoadingPost(true);
+      try {
+        const { data } = await axiosInstance.get(
+          `${API_ENDPOINTS.POST}?limit=${PAGINATION.LIMIT * page}&offset=${
+            PAGINATION.OFFSET * (page - 1)
+          }${userId ? `&userId=${userId}` : ""}`
+        );
+        dispatch(setAllPost({ posts: data.posts, total: data.total }));
+        setIsLoadingPost(false);
+      } catch (error: any) {
+        notification.error({
+          message: error.message,
+        });
+        setIsLoadingPost(false);
+      }
+    },
+    [dispatch, page]
+  );
 
   const deletePostById = useCallback(
     async (postId: number) => {
@@ -200,19 +204,18 @@ const usePost = () => {
 
   const showUpdatePost = useCallback(
     (post: Post) => {
-      console.log(post);
       dispatch(setPostDetail({ post }));
     },
     [dispatch]
   );
 
   const handleGetPostScroll = useCallback(
-    async (page: number) => {
+    async ({ page, userId }) => {
       try {
         const { data } = await axiosInstance.get(
           `${API_ENDPOINTS.POST}?limit=${PAGINATION.LIMIT}&offset=${
             PAGINATION.OFFSET * (page - 1)
-          }`
+          }${userId ? `&userId=${userId}` : ""}`
         );
         dispatch(addPostScroll({ posts: data.posts }));
         setPage(page);
@@ -230,14 +233,15 @@ const usePost = () => {
       const element = e.target;
       if (element.scrollHeight === element.scrollTop + element.clientHeight) {
         if (path.includes(SCROLL_PATH.USER)) {
+          handleGetPostScroll({ page: page + 1, userId: userProfile?.userId });
           return;
         }
         if (path.includes(SCROLL_PATH.HOME)) {
-          handleGetPostScroll(page + 1);
+          handleGetPostScroll({ page: page + 1 });
         }
       }
     },
-    [handleGetPostScroll, page]
+    [handleGetPostScroll, page, userProfile?.userId]
   );
 
   const getComments = useCallback(

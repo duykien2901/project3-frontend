@@ -268,16 +268,18 @@ const PostDetai: React.FC<PostDetail> = ({
   return (
     <PostDetailWrapper key={postDetail.id}>
       <div className="title">
-        <div className="author">
-          <AvatarBase user={owner} size={45} />
-          <div className="auth-name">
-            <div className="name">{owner.name}</div>
-            <div className="time">
-              <span>{formatDate(postDetail.createdAt)}</span>{" "}
-              <span>{typeMode(postDetail.modeHide)}</span>
+        <Link to={`/user/${owner.userId}`}>
+          <div className="author">
+            <AvatarBase user={owner} size={45} />
+            <div className="auth-name">
+              <div className="name">{owner.name}</div>
+              <div className="time">
+                <span>{formatDate(postDetail.createdAt)}</span>{" "}
+                <span>{typeMode(postDetail.modeHide)}</span>
+              </div>
             </div>
           </div>
-        </div>
+        </Link>
 
         <div className="edit-btn">
           {postDetail.ownerId === loggedUser?.id && (

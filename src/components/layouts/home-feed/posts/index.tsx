@@ -12,6 +12,7 @@ import CreatePostModal from "./CreatePostModal";
 import { postSelector } from "src/ducks/home/post/selector";
 import { Post } from "src/ducks/home/post";
 import { LoadingOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 const PostHomeFeed: React.FC = () => {
   const { loggedUser } = useSelector(userSelector);
@@ -27,11 +28,13 @@ const PostHomeFeed: React.FC = () => {
     <PostHomeFeedWrapper>
       <div className="post-create">
         <div className="feeling">
-          <span className="avatar">
-            <Avatar src={loggedUser?.profileImage} size={50}>
-              {loggedUser?.name.charAt(0).toUpperCase()}
-            </Avatar>
-          </span>
+          <Link to={`/user/${loggedUser?.userId}`}>
+            <span className="avatar">
+              <Avatar src={loggedUser?.profileImage} size={50}>
+                {loggedUser?.name.charAt(0).toUpperCase()}
+              </Avatar>
+            </span>
+          </Link>
           <div className="content" onClick={() => setIsVisiblePostModal(true)}>
             Bạn đang nghĩ gì
           </div>

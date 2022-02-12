@@ -15,6 +15,7 @@ import AvatarBase from "src/components/base/avatar/Avatar";
 import { io } from "socket.io-client";
 import { config } from "src/config";
 import { socket } from "src/services/socket";
+import { Link } from "react-router-dom";
 
 const Header: React.FC = () => {
   const { isVisibleSetting, setIsVisibleSetting, listenSocket, removeSocket } =
@@ -58,7 +59,9 @@ const Header: React.FC = () => {
     <HeaderWrapper>
       <div className="header-contain">
         <div className="logo">
-          <img src={logo} alt="logo" />
+          <Link to={"/"}>
+            <img src={logo} alt="logo" />
+          </Link>
         </div>
         <div className="search">
           <Input

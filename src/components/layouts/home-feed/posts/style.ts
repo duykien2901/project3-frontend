@@ -173,6 +173,11 @@ export const PostDetailWrapper = styled.div`
         .name {
           font-size: 16px;
           font-weight: 600;
+          color: #000;
+
+          :hover {
+            text-decoration: underline;
+          }
         }
         .time {
           display: flex;

@@ -10,10 +10,12 @@ export interface User {
 
 type InitialState = {
   loggedUser: User | null;
+  userProfile: User | null;
 };
 
 const initialState: InitialState = {
   loggedUser: null,
+  userProfile: null,
 };
 
 const { reducer, actions } = createSlice({
@@ -30,9 +32,16 @@ const { reducer, actions } = createSlice({
     signOut: (state) => {
       return state;
     },
+    setUserProfile: (
+      state: InitialState,
+      action: PayloadAction<{ user: User | null }>
+    ) => {
+      const { user } = action.payload;
+      state.userProfile = user;
+    },
   },
 });
 
-export const { setUser, signOut } = actions;
+export const { setUser, signOut, setUserProfile } = actions;
 
 export default reducer;

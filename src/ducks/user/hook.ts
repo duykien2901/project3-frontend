@@ -9,7 +9,7 @@ import {
   removeToken,
   setToken,
 } from "src/libs/helpers/token";
-import { setUser, signOut } from ".";
+import { setUser, setUserProfile, signOut } from ".";
 import { API_ENDPOINTS } from "src/constants/commom.constant";
 import { useHistory } from "react-router-dom";
 import axiosInstance from "src/services";
@@ -196,6 +196,31 @@ const useUser = () => {
     [dispatch, loggedUser?.id]
   );
 
+  const getProfileUser = useCallback(
+    async (userId) => {
+      try {
+        const {
+          data: { user },
+        } = await axiosInstance.get(`${API_ENDPOINTS.USER}/${userId}`);
+        console.log(user);
+        dispatch(setUserProfile({ user }));
+      } catch (err: any) {
+        notification.error({ message: err.message });
+      }
+    },
+    [dispatch]
+  );
+
+  const handleCreateFollow = useCallback(async ({ userId, followId }) => {
+    try {
+      const { data } = await axiosInstance.post(
+        `${API_ENDPOINTS.USER}/${userId}/follows`,
+        { followId }
+      );
+      console.log(data);
+    } catch (err) {}
+  }, []);
+
   return {
     loggedUser,
     login,
@@ -213,6 +238,8 @@ const useUser = () => {
     changeAccount,
     logout,
     verifyChangeMail,
+    getProfileUser,
+    handleCreateFollow,
   };
 };
 

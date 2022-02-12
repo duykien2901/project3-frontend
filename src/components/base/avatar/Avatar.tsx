@@ -11,7 +11,7 @@ const AvatarBase: React.FC<Props> = ({ size, user }) => {
   return (
     <AvatarWrapper>
       <Avatar src={user?.profileImage} size={size}>
-        {user?.name.charAt(0).toUpperCase()}
+        {user?.name?.charAt(0).toUpperCase()}
       </Avatar>
     </AvatarWrapper>
   );
