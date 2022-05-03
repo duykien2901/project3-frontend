@@ -4,4 +4,4 @@ RUN mkdir -p /usr/src/frontend
 
 WORKDIR /usr/src/frontend
 
-COPY . .
+COPY . /usr/src/frontend
